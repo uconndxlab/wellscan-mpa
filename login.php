@@ -1,9 +1,12 @@
 <?php include 'inc/layout/header.php'; ?>
 
-<h1>Log In to WellSCAN</h1>
-<div id="firebaseui-auth-container"></div>
-<div id="loader">Loading...</div>
-
+<div class="row h-100 justify-content-center align-items-center">
+    <div class="col-12">
+        
+        <div id="firebaseui-auth-container"></div>
+        <div id="loader">Loading...</div>
+    </div>
+</div>
 
 
 

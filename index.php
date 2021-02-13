@@ -10,7 +10,6 @@
                     <button type="button" id="activate_scan" data-toggle="modal" data-target="#exampleModal" class="btn btn-secondary"><i class="bi bi-upc-scan"></i></button>
                 </div>
             </div>
-            
         </div>
         <div class="form-group">
             <input type="hidden" name="src" value="search">
@@ -20,10 +19,13 @@
 </div>
 
 <div class="modal fade" id="exampleModal">
+  
   <div class="modal-dialog">
     <div class="modal-content">
       <div id="interactive" class="modal-body">
+        <div style="position:absolute;width:80%; height:10px; opacity:0.75; border:5px solid white;z-index:9999; top:50%; margin-top:-5px;left:50%;margin-left:-40%;">
         
+        </div>
       </div>
     </div>
   </div>
@@ -36,6 +38,31 @@
     document.querySelector("#upc").addEventListener('focus', function() {
         this.value="";
     });
+
+ if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+  alert("enumerateDevices() not supported.");
+  
+}
+
+var backCamID;
+
+navigator.mediaDevices.enumerateDevices()
+.then(function(devices) {
+  devices.forEach(function(device) {
+    //alert( JSON.stringify(device) );
+    if( device.kind == "videoinput" && device.label.match(/back/) != null ){
+      //alert("Back found!");
+      backCamID = device.deviceId;
+    }
+  });
+})
+.catch(function(err) {
+  //alert(err.name + ": " + err.message);
+});
+
+if(typeof(backCamID)=="undefined"){
+  console.log("back camera not found.");
+}
 
     var Quagga = window.Quagga;
     var App = {
@@ -109,6 +136,7 @@
                         constraints: {
                             width: 800,
                             height: 600,
+                            deviceId:backCamID
                         }
                     });
             }
