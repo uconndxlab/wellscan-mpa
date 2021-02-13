@@ -59,7 +59,7 @@
             </select>
 
             <div style="margin-top:35px;" id="all_categories">
-                <div class="radio"><input type="radio" name="category" id="fruit-vegetable" value="fruit-vegetable"><label for="fruit-veg">Fruit/Vegetable</label></div>
+                <div class="radio"><input type="radio" name="category" id="fruit-vegetable" value="fruit-vegetable"><label for="fruit-vegetable">Fruit/Vegetable</label></div>
                 <div class="radio"><input type="radio" name="category" id="protein" value="protein"><label for="protein">Protein</label></div>
                 <div class="radio"><input type="radio" name="category" id="dairy" value="dairy"><label for="dairy">Dairy</label></div>
                 <div class="radio"><input type="radio" name='category' id="nonDairy" value="non-dairy-alternative"><label for="nonDairy">Non-Dairy Alternative</label></div>
