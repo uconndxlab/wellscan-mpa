@@ -124,13 +124,12 @@ if(typeof(backCamID)=="undefined"){
         },
         hideOverlay: function() {
             $('#exampleModal').modal('hide');
-            document.querySelector("#the_form").submit();
         },
         configureScanner: function(selector) {
             if (!this._scanner) {
                 this._scanner = Quagga
-                    .decoder({readers: ['ean_reader']})
-                    .locator({patchSize: 'medium'})
+                    .decoder({readers: ['upc_reader']})
+                    .locator({patchSize: 'medium', halfSample:true})
                     .fromSource({
                         target: selector,
                         constraints: {
