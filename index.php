@@ -5,7 +5,7 @@
 </style>
 <h3>Food Search</h3>
 <div class="row h-100 justify-content-center align-items-center">
-    <form id="the_form" method="get" class="col-12" action="food.php">
+    <form id="the_form" method="get" class="col-12" action="food.php" autocomplete="off">
         <div class="form-group">
             <label for="upc">UPC</label>
             <div class="input-group">

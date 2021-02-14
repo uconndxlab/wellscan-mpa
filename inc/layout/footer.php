@@ -191,7 +191,7 @@ var App = {
             document.querySelector("#search_upc").value = code;
             document.querySelector("#interactive").classList.add("d-none");
             
-            //document.querySelector("#the_form").submit();
+            document.querySelector("#the_form").submit();
         }
     });
 
