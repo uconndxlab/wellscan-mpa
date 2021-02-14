@@ -50,6 +50,8 @@
                 <button type="button" id="activate_scan" class="btn btn-secondary"><i class="bi bi-upc-scan"></i></button>
             </div>
         </div>
+
+        <button class="btn-primary btn">search</button>
         
         
         <input type="hidden" name="src" value="search">
@@ -64,11 +66,12 @@
 </nav>
 
 <script>
-    document.querySelector("#upc").focus();
 
-    document.querySelector("#search_upc").addEventListener('focus', function() {
-        this.value="";
-    });
+
+document.querySelector("#search_upc").addEventListener('focus', function() {
+    this.value="";
+    App.init();
+});
 
  if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
   alert("enumerateDevices() not supported.");
@@ -94,9 +97,6 @@ navigator.mediaDevices.enumerateDevices()
 if(typeof(backCamID)=="undefined"){
   console.log("back camera not found.");
 }
-
-
-
 
 var App = {
     init: function() {
@@ -180,7 +180,6 @@ var App = {
     lastResult : null
 };
 
-
     Quagga.onProcessed(function(result) {
 
     });
@@ -192,11 +191,12 @@ var App = {
             App.lastResult = code;
             var $node = null, canvas = Quagga.canvas.dom.image;
                 actualImage = canvas.toDataURL();
-
+            
+            Quagga.stop();
             document.querySelector("#search_upc").value = code;
             document.querySelector("#interactive").classList.add("d-none");
-            document.querySelector("#the_form").submit();
-            Quagga.stop();
+            
+            //document.querySelector("#the_form").submit();
         }
     });
 
@@ -204,14 +204,6 @@ document.querySelector("#activate_scan").addEventListener("click", function() {
     App.init();
 })
                 
-                
-   
-                
-            
-
-
-
-
 </script>
 
 
