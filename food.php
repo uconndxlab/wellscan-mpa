@@ -11,11 +11,10 @@
 
  .radio input + label {
     box-shadow: 2px 2px 12px #44444414;
-    margin-right: 15px;
-    margin-bottom: 15px;
+
     display: inline-block;
     border: 1px solid #24474c;
-    padding: 9px 18px;
+    padding: 3px 10px;
     border-radius: 36px;
     position: relative;
     cursor: pointer;
@@ -31,13 +30,15 @@
 
 </style>
  
-    <form id="foodNutritionInfo" method="POST" class="row h-100 justify-content-center">
+    <form id="foodNutritionInfo" method="POST" autcomplete="off" class="row h-100 justify-content-center">
         
         <div class="col-md-6">
         
-            <h4>Food Information</h4>
+            
             <div class="form-group">
-               
+                <h5>Food Information</h5>
+                <div class="form-group"><label for="name">Food Name: </label><input class="form-control" id="name" name="name" type="text" placeholder="Not found."></label></div>
+
                 <label for="rank">Rank: </label> 
                 <select class="form-control" disabled name="rank" id="rank">
                     <option value="unranked">--</option>
@@ -46,19 +47,17 @@
                     <option value="often">Often</option>
                 </select>
             </div>
-            <div class="form-group"><label for="upc">UPC: </label><input class="form-control" disabled type="text" value="<?php echo $_GET['upc']; ?>" id="upc" name="upc"></p></div>
-            <div class="form-group"><label for="name">Food Name: </label><input class="form-control" id="name" name="name" type="text" placeholder="Not found."></label></div>
-            <div class="form-group"><label for="saturated_fat">Saturated Fat: </label><input class="form-control" name="saturated_fat" id="saturated_fat" type="text" placeholder="Not found."></div>
-            <div class="form-group"><label for="sodium">Sodium: </label> <input class="form-control" id="sodium" name="sodium" type="text" placeholder="Not found."></div>
-            <div class="form-group"><label for="sugars">Sugars: </label> <input class="form-control" id="sugars" name="sugars" type="text" placeholder="Not found."></div>
-        
+            <div class="form-group">
+                <h5>Inventory Options</h5>
+                <a href="#" id="inventory-add" class="btn btn-block btn-secondary">Add to Inventory</a>
+            </div>     
         </div>
         <div class="col-md-6">
 
 
             <div class="col-12"><a class="d-none btn btn-secondary btn-block" id="calculate_rank" href="javascript:void(0);">Calculate Rank</a></div>
 
-            <h4>Ranking Information</h4>
+            <h5>Ranking Information</h5>
             <div class="form-group" id="all_categories">
                 <div class="radio"><input type="radio" name="category" id="fruit-vegetable" value="fruit-vegetable"><label for="fruit-vegetable">Fruit/Vegetable</label></div>
                 <div class="radio"><input type="radio" name="category" id="protein" value="protein"><label for="protein">Protein</label></div>
@@ -72,6 +71,12 @@
                 <div class="radio"><input type="radio" name='category' id="grain" value="grain"><label for="grain">Non-Whole Grain</label></div>
             </div>
 
+            <h5>Nutrient Info</h5>
+            <div class="form-group"><label for="upc">UPC: </label><input class="form-control" disabled type="text" value="<?php echo $_GET['upc']; ?>" id="upc" name="upc"></p></div>
+            <div class="form-group"><label for="saturated_fat">Saturated Fat: </label><input class="form-control" name="saturated_fat" id="saturated_fat" type="text" placeholder="Not found."></div>
+            <div class="form-group"><label for="sodium">Sodium: </label> <input class="form-control" id="sodium" name="sodium" type="text" placeholder="Not found."></div>
+            <div class="form-group"><label for="sugars">Sugars: </label> <input class="form-control" id="sugars" name="sugars" type="text" placeholder="Not found."></div>
+
             <div class="form-group"><label for="nutrition_source">Nutrition Source: </label> <input disabled id="nutrition_source" class="form-control" name="nutrition_source" type="text" placeholder="Not found." /></div>
 
 
@@ -79,10 +84,8 @@
                 <div class="d-none alert" id="catAlert"></div>
             </div>
 
+
             <div class="form-group">
-                <h4>Inventory Options</h4>
-                <button class="btn btn-block btn-secondary">Add to Inventory</button>
-               
                 <button id="save" type="submit" class="d-none btn btn-block btn-primary">Save Changes</button>
                 <div class="d-none alert" id="saveAlert"></div>
             </div>
@@ -216,6 +219,30 @@ function formChanged() {
     showFormAlert("You have unsaved changes.", "alert-warning");
 }
 
+function addFoodToInventory() {
+    var db = firebase.firestore();
+   
+    db.collection("organizations")
+    .doc("uconn")
+    .collection("inventory")
+        .add({
+            date_scanned: new Date(),
+            name:name_input.value,
+            status:"active",
+            rank:rank.rank,
+            upc: upc,
+            scanned_by:firebaseEmail
+        }
+    )
+    .then(function(docRef) {
+        showFormAlert("Added to inventory.", "alert-success");
+        console.log("Your item has been saved with ID " + docRef.id);
+    })
+    .catch(function(error) {
+        console.error("Error adding document: ", error);
+   });
+}
+
 function getFood() {
     fetch(api_url + lookup_endpoint + upc)        
     .then(
@@ -312,6 +339,11 @@ window.addEventListener("DOMContentLoaded", (e) => {
     sugars_input.addEventListener("change" ,function() {
         nutrition_source_input.value = firebaseEmail;
         calcRank();
+    });
+
+    document.querySelector("#inventory-add").addEventListener("click", function(e){
+        e.preventDefault();
+        addFoodToInventory();
     });
 });
 </script>

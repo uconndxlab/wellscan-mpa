@@ -30,11 +30,6 @@
 
 <script>
     document.querySelector("#search_upc").focus();  
-            
-
-
-
-
 </script>
 
 <?php include 'inc/layout/footer.php';?>

@@ -1,6 +1,32 @@
 
 
 </main>
+
+
+
+
+
+<?php if (basename($_SERVER['PHP_SELF']) != "index.php"): ?>
+    <nav class="navbar navbar-dark fixed-bottom bg-dark flex-md-nowrap p-2 shadow">
+        <form id="the_form" autocomplete="off" method="get" class="w-100 m-1" action="food.php">
+            <div class="input-group">
+                <input  class="form-control form-control-dark"  required type = "text" name="upc" id="search_upc">
+                <div class="input-group-append">
+                    <button class="btn-primary btn">search</button>
+                </div>
+            </div>        
+            <input type="hidden" name="src" value="search">
+            
+            <div id="interactive" style="max-width:100%;z-index:9998;" class="d-none viewport justify-content-center align-items-center">
+                <div style="position:absolute;top:50%;left:10%; border:5px solid white;width:80%;z-index:9999;opacity:0.75"></div>
+            </div>
+        </form>
+    </nav>
+<?php endif; ?>
+
+
+
+
 <script>
 <?php if (basename($_SERVER['PHP_SELF']) !== "login.php"): ?>
     firebase.auth().onAuthStateChanged(firebaseUser => {
@@ -26,46 +52,7 @@
 <?php endif; ?>
 </script>
 
-<nav class="navbar fixed-bottom navbar-expand-sm navbar-dark bg-dark">
-  <div class="container-fluid">
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarCollapse">
-      <ul class="navbar-nav">
-        <li class="auth-only nav-item">
-          <a class="nav-link" href="logout.php">Log Out</a>
-        </li>
-        <li class="nav-item" style="float:right;">
-          <a class="nav-link" href="index.php" tabindex="-1" aria-disabled="true">Food Search</a>
-        </li>
-      </ul>
-    </div>
 
-<?php if (basename($_SERVER['PHP_SELF']) != "index.php"): ?>
-    <form id="the_form" autocomplete="off" method="get" class="form-inline my-2 my-lg-0" action="food.php">
-        <div class="input-group">
-            <input  class="form-control"  required type = "text" name="upc" id="search_upc">
-            <div class="input-group-append">
-                <button class="btn-primary btn">search</button>
-            </div>
-
-            
-        </div>
-
-       
-        
-        
-        <input type="hidden" name="src" value="search">
-        
-        <div id="interactive" style="position:fixed;bottom:50px; right:10px; max-width:250px;z-index:9998;" class="d-none viewport justify-content-center align-items-center">
-            <div style="position:absolute;top:45%;border:5px solid white;width:100%;z-index:9999;opacity:0.75"></div>
-        </div>
-    </form>
-<?php endif; ?>
-
-  </div>
-</nav>
 
 <script>
 
@@ -208,9 +195,9 @@ var App = {
         }
     });
 
-document.querySelector("#activate_scan").addEventListener("click", function() {
-    App.init();
-})
+// document.querySelector("#activate_scan").addEventListener("click", function() {
+//     App.init();
+// })
                 
 </script>
 
