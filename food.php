@@ -83,7 +83,7 @@
                 <h4>Inventory Options</h4>
                 <button class="btn btn-block btn-secondary">Add to Inventory</button>
                
-                <button id="save" type="submit" class="btn btn-block btn-primary">Save Changes</button>
+                <button id="save" type="submit" class="d-none btn btn-block btn-primary">Save Changes</button>
                 <div class="d-none alert" id="saveAlert"></div>
             </div>
         
@@ -212,8 +212,8 @@ function hideFormAlert() {
 }
 
 function formChanged() {
+    save_button.classList.remove('d-none');
     showFormAlert("You have unsaved changes.", "alert-warning");
-    
 }
 
 function getFood() {

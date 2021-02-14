@@ -43,20 +43,22 @@
     </div>
 
 <?php if (basename($_SERVER['PHP_SELF']) != "index.php"): ?>
-    <form id="the_form" method="get" class="form-inline my-2 my-lg-0" action="food.php">
+    <form id="the_form" autocomplete="off" method="get" class="form-inline my-2 my-lg-0" action="food.php">
         <div class="input-group">
-            <input class="form-control"  required type = "text" name="upc" id="search_upc">
+            <input  class="form-control"  required type = "text" name="upc" id="search_upc">
             <div class="input-group-append">
-                <button type="button" id="activate_scan" class="btn btn-secondary"><i class="bi bi-upc-scan"></i></button>
+                <button class="btn-primary btn">search</button>
             </div>
+
+            
         </div>
 
-        <button class="btn-primary btn">search</button>
+       
         
         
         <input type="hidden" name="src" value="search">
         
-        <div id="interactive" style="position:fixed;bottom:0px; right:0px; max-width:250px;" class="viewport justify-content-center align-items-center">
+        <div id="interactive" style="position:fixed;bottom:50px; right:10px; max-width:250px;z-index:9998;" class="d-none viewport justify-content-center align-items-center">
             <div style="position:absolute;top:45%;border:5px solid white;width:100%;z-index:9999;opacity:0.75"></div>
         </div>
     </form>
@@ -71,6 +73,12 @@
 document.querySelector("#search_upc").addEventListener('focus', function() {
     this.value="";
     App.init();
+});
+
+document.querySelector("#search_upc").addEventListener('blur', function() {
+    
+    document.querySelector("#interactive").classList.add("d-none");
+    Quagga.stop();
 });
 
  if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
@@ -101,7 +109,7 @@ if(typeof(backCamID)=="undefined"){
 var App = {
     init: function() {
         var self = this;
-
+        document.querySelector("#interactive").classList.remove("d-none");
         Quagga.init(this.state, function(err) {
             if (err) {
                 return self.handleError(err);
