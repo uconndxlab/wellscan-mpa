@@ -30,35 +30,36 @@
   }
 
 </style>
-
-<?php if($_GET['src'] == "search"): ?>
-    <a href="index.php"> << Back to Search </a>
-<?php endif; ?>
-
-<div id="food_display" class="row h-100 justify-content-center align-items-center">
-    <form id="foodNutritionInfo" method="POST" class="row">
+ 
+    <form id="foodNutritionInfo" method="POST" class="row h-100 justify-content-center align-items-center">
         
-        <div class="form-group col-md-6">
+        <div class="col-md-6">
+        
             <h4>Food Information</h4>
-            <label for="upc">UPC: </label><input class="form-control" disabled type="text" value="<?php echo $_GET['upc']; ?>" id="upc" name="upc"></p>
-            <label for="name">Food Name: </label><input class="form-control" id="name" name="name" type="text" placeholder="Not found."></label>
-            <label for="saturated_fat">Saturated Fat: </label><input class="form-control" name="saturated_fat" id="saturated_fat" type="text" placeholder="Not found.">
-            <label for="sodium">Sodium: </label> <input class="form-control" id="sodium" name="sodium" type="text" placeholder="Not found.">
-            <label for="sugars">Sugars: </label> <input class="form-control" id="sugars" name="sugars" type="text" placeholder="Not found.">
-            <label for="nutrition_source">Nutrition Source: </label> <input disabled id="nutrition_source" class="form-control" name="nutrition_source" type="text" placeholder="Not found." />
-
+            <div class="form-group"><label for="upc">UPC: </label><input class="form-control" disabled type="text" value="<?php echo $_GET['upc']; ?>" id="upc" name="upc"></p></div>
+            <div class="form-group"><label for="name">Food Name: </label><input class="form-control" id="name" name="name" type="text" placeholder="Not found."></label></div>
+            <div class="form-group"><label for="saturated_fat">Saturated Fat: </label><input class="form-control" name="saturated_fat" id="saturated_fat" type="text" placeholder="Not found."></div>
+            <div class="form-group"><label for="sodium">Sodium: </label> <input class="form-control" id="sodium" name="sodium" type="text" placeholder="Not found."></div>
+            <div class="form-group"><label for="sugars">Sugars: </label> <input class="form-control" id="sugars" name="sugars" type="text" placeholder="Not found."></div>
+            <div class="form-group"><label for="nutrition_source">Nutrition Source: </label> <input disabled id="nutrition_source" class="form-control" name="nutrition_source" type="text" placeholder="Not found." /></div>
+        
         </div>
-        <div class="form-group col-md-6">
-            <h4>Ranking Information</h4>
-            <label for="rank">Rank: </label> 
-            <select class="form-control" disabled name="rank" id="rank">
-                <option value="unranked">--</option>
-                <option value="rarely">Rarely</option>
-                <option value="sometimes">Sometimes</option>
-                <option value="often">Often</option>
-            </select>
+        <div class="col-md-6">
+            <div class="form-group">
+                <h4>Ranking Information</h4>
+                <label for="rank">Rank: </label> 
+                <select class="form-control" disabled name="rank" id="rank">
+                    <option value="unranked">--</option>
+                    <option value="rarely">Rarely</option>
+                    <option value="sometimes">Sometimes</option>
+                    <option value="often">Often</option>
+                </select>
+            </div>
 
-            <div style="margin-top:35px;" id="all_categories">
+            <div class="col-12"><a class="d-none btn btn-secondary btn-block" id="calculate_rank" href="javascript:void(0);">Calculate Rank</a></div>
+
+
+            <div class="form-group" id="all_categories">
                 <div class="radio"><input type="radio" name="category" id="fruit-vegetable" value="fruit-vegetable"><label for="fruit-vegetable">Fruit/Vegetable</label></div>
                 <div class="radio"><input type="radio" name="category" id="protein" value="protein"><label for="protein">Protein</label></div>
                 <div class="radio"><input type="radio" name="category" id="dairy" value="dairy"><label for="dairy">Dairy</label></div>
@@ -70,21 +71,27 @@
                 <div class="radio"><input type="radio" name='category' id="grain-whole" value="grain-whole"><label for="grain-whole" >Whole Grain</label></div>
                 <div class="radio"><input type="radio" name='category' id="grain" value="grain"><label for="grain">Non-Whole Grain</label></div>
             </div>
-            <div class="col-12"><a class="d-none btn btn-secondary btn-block" id="calculate_rank" href="javascript:void(0);">Calculate Rank</a></div>
 
             <div class="col-12">
                 <div class="d-none alert" id="catAlert"></div>
             </div>
+
+            <div class="form-group">
+                <h4>Inventory Options</h4>
+                <button class="btn btn-block btn-secondary">Add to Inventory</button>
+            </div>
+
         </div>
 
          <input type="hidden" name="saveFromForm" value="true">
-        <button id="save" type="submit" class="btn btn-block btn-primary">Save Food</button>
-        <div class="col-12">
-            <div class="d-none alert" id="saveAlert"></div>
-        </div>
+     
+            <div style="margin-top:20px" class="col-12">
+                <button id="save" type="submit" class="btn btn-block btn-primary">Save Changes</button>
+                <div class="d-none alert" id="saveAlert"></div>
+            </div>
+        
     </form>
 
-</div>
 <script src="food.js"></script>
 <script>
 
@@ -113,7 +120,7 @@ function calcRank() {
     var sodium = document.querySelector("#sodium").value;
     var sugars = document.querySelector("#sugars").value;
     var foodObj = {};
-    showCatChangeAlert("Recalculating Ranking...", "alert-info");
+    //showCatChangeAlert("Recalculating Ranking...", "alert-info");
     fetch(api_url + calcRankNuts + "/" + category + "/" + satfat + "/" + sodium + "/" + 0 + "/" + sugars)
     .then(
             function(response) {
@@ -173,8 +180,7 @@ function hideCalcRankButton() {
 function catChanged() {
     console.log("Category Changed...");
     showCatChangeAlert("Re-calculate the ranking.", "alert-warning");
-    displayCalcRankButton();
-  
+    //displayCalcRankButton();
 }
 
 function showCatChangeAlert(msg, cl) {
@@ -203,7 +209,7 @@ function hideFormAlert() {
 
 function formChanged() {
     showFormAlert("You have unsaved changes.", "alert-warning");
-    nutrition_source_input.value = firebaseEmail;
+    
 }
 
 function getFood() {
@@ -289,15 +295,19 @@ window.addEventListener("DOMContentLoaded", (e) => {
     });
     
     satfat_input.addEventListener("change" ,function() {
-        displayCalcRankButton();
+        //displayCalcRankButton();
+        nutrition_source_input.value = firebaseEmail;
+        calcRank();
     });
 
     sodium.addEventListener("change" ,function() {
-        displayCalcRankButton();
+        nutrition_source_input.value = firebaseEmail;
+        calcRank();
     });
 
     sugars_input.addEventListener("change" ,function() {
-        displayCalcRankButton();
+        nutrition_source_input.value = firebaseEmail;
+        calcRank();
     });
 });
 </script>

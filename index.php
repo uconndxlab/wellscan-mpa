@@ -1,5 +1,9 @@
 <?php include 'inc/layout/header.php'; ?>
 
+<style>
+.drawingBuffer {display:none;}
+</style>
+<h3>Food Search</h3>
 <div class="row h-100 justify-content-center align-items-center">
     <form id="the_form" method="get" class="col-12" action="food.php">
         <div class="form-group">
@@ -13,9 +17,11 @@
         </div>
         <div class="form-group">
             <input type="hidden" name="src" value="search">
-            <button type="submit" class="btn btn-block btn-primary" id="btn_search">Search For Food</button>
+            <button type="submit" class="btn btn-block btn-primary" id="btn_search">Lookup</button>
         </div>
-        <div id="interactive" class="viewport"></div>
+        <div id="interactive" style="position:relative;display:flex;" class="viewport justify-content-center align-items-center">
+            <div style="position:absolute;border:5px solid white;width:80%;z-index:9999;opacity:0.75"></div>
+        </div>
     </form>
 </div>
 
@@ -25,7 +31,7 @@
 <script>
     document.querySelector("#upc").focus();
 
-    document.querySelector("#upc").addEventListener('focus', function() {
+    document.querySelector("#search_upc").addEventListener('focus', function() {
         this.value="";
     });
 
@@ -153,6 +159,8 @@ var App = {
                 actualImage = canvas.toDataURL();
 
             document.querySelector("#upc").value = code;
+            document.querySelector("#interactive").classList.add("d-none");
+            Quagga.stop();
         }
     });
 

@@ -50,7 +50,8 @@
 
 <style>
 body,html{
-    height:100%;
+    min-height:100%;
+    padding-bottom:55px;
 }
 
 video {
@@ -63,6 +64,7 @@ video {
 
 .often {
     background-color: green !important;
+    color:#fff;
 }
 
 .rarely {
@@ -74,7 +76,15 @@ video {
     background-color: #ccc; !important;
 }
 
+.wrap-all {
+  padding-top:40px;
+}
+
+.drawingBuffer {
+  display:none;
+}
+
 </style>
 </head>
 <body class="bg-light">
-<main role="main" class="container h-100">
+<main role="main" class="wrap-all container">
