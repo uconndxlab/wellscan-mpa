@@ -7,7 +7,7 @@
             <div class="input-group">
                 <input class="form-control"  required type = "text" name="upc" id="upc">
                 <div class="input-group-append">
-                    <button type="button" id="activate_scan" data-toggle="modal" data-target="#exampleModal" class="btn btn-secondary"><i class="bi bi-upc-scan"></i></button>
+                    <button type="button" id="activate_scan" class="btn btn-secondary"><i class="bi bi-upc-scan"></i></button>
                 </div>
             </div>
         </div>
@@ -15,21 +15,11 @@
             <input type="hidden" name="src" value="search">
             <button type="submit" class="btn btn-block btn-primary" id="btn_search">Search For Food</button>
         </div>
+        <div id="interactive" class="viewport"></div>
     </form>
 </div>
 
-<div class="modal fade" id="exampleModal">
-  
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div id="interactive" class="modal-body">
-        <div style="position:absolute;width:80%; height:10px; opacity:0.75; border:5px solid white;z-index:9999; top:50%; margin-top:-5px;left:50%;margin-left:-40%;">
-        
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+
 
 
 <script>
@@ -64,87 +54,111 @@ if(typeof(backCamID)=="undefined"){
   console.log("back camera not found.");
 }
 
-    var Quagga = window.Quagga;
-    var App = {
-        _scanner: null,
-        init: function() {
-            this.attachListeners();
-        },
-        activateScanner: function() {
-            var scanner = this.configureScanner('#interactive'),
-                onDetected = function (result) {
-                    document.querySelector('#upc').value = result.codeResult.code;
-                    stop();
-                }.bind(this),
-                stop = function() {
-                    scanner.stop();  // should also clear all event-listeners?
-                    scanner.removeEventListener('detected', onDetected);
-                    this.hideOverlay();
-                    this.attachListeners();
-                }.bind(this);
 
-            //this.showOverlay(stop);
-            scanner.addEventListener('detected', onDetected).start();
-        },
-        attachListeners: function() {
-            var self = this,
-                button = document.querySelector('#activate_scan');
 
-            button.addEventListener("click", function onClick(e) {
-                e.preventDefault();
-                button.removeEventListener("click", onClick);
-                self.activateScanner();
+
+var App = {
+    init: function() {
+        var self = this;
+
+        Quagga.init(this.state, function(err) {
+            if (err) {
+                return self.handleError(err);
+            }
+            App.attachListeners();
+
+            Quagga.start();
+        });
+    },
+    handleError: function(err) {
+        console.log(err);
+    },
+    initCameraSelection: function(){
+        var streamLabel = Quagga.CameraAccess.getActiveStreamLabel();
+
+        return Quagga.CameraAccess.enumerateVideoDevices()
+        .then(function(devices) {
+            function pruneText(text) {
+                return text.length > 30 ? text.substr(0, 30) : text;
+            }
+            var $deviceSelection = document.getElementById("deviceSelection");
+            while ($deviceSelection.firstChild) {
+                $deviceSelection.removeChild($deviceSelection.firstChild);
+            }
+            devices.forEach(function(device) {
+                var $option = document.createElement("option");
+                $option.value = device.deviceId || device.id;
+                $option.appendChild(document.createTextNode(pruneText(device.label || device.deviceId || device.id)));
+                $option.selected = streamLabel === device.label;
+                $deviceSelection.appendChild($option);
             });
-        },
-        showOverlay: function(cancelCb) {
-            if (!this._overlay) {
-                var content = document.createElement('div'),
-                    closeButton = document.createElement('div');
+        });
+    },
+    attachListeners: function() {
+        var self = this;
 
-                closeButton.appendChild(document.createTextNode('X'));
-                content.className = 'overlay__content';
-                closeButton.className = 'overlay__close';
-                this._overlay = document.createElement('div');
-                this._overlay.className = 'overlay';
-                this._overlay.appendChild(content);
-                content.appendChild(closeButton);
-                closeButton.addEventListener('click', function closeClick() {
-                    closeButton.removeEventListener('click', closeClick);
-                    cancelCb();
-                });
-                document.body.appendChild(this._overlay);
-            } else {
-                var closeButton = document.querySelector('.overlay__close');
-                closeButton.addEventListener('click', function closeClick() {
-                    closeButton.removeEventListener('click', closeClick);
-                    cancelCb();
-                });
+        // self.initCameraSelection();
+        $(".controls").on("click", "button.stop", function(e) {
+            e.preventDefault();
+            Quagga.stop();
+            
+        });
+
+    },
+
+    detachListeners: function() {
+        $(".controls").off("click", "button.stop");
+        $(".controls .reader-config-group").off("change", "input, select");
+    },
+
+    state: {
+        inputStream: {
+            type : "LiveStream",
+            constraints: {
+                width: {min: 640},
+                height: {min: 480},
+                facingMode: "environment",
+                aspectRatio: {min: 1, max: 2},
+                deviceId:backCamID
             }
-            this._overlay.style.display = "block";
         },
-        hideOverlay: function() {
-            $('#exampleModal').modal('hide');
+        locator: {
+            patchSize: "medium",
+            halfSample: true
         },
-        configureScanner: function(selector) {
-            if (!this._scanner) {
-                this._scanner = Quagga
-                    .decoder({readers: ['upc_reader']})
-                    .locator({patchSize: 'medium', halfSample:true})
-                    .fromSource({
-                        target: selector,
-                        constraints: {
-                            width: 800,
-                            height: 600,
-                            deviceId:backCamID
-                        }
-                    });
-            }
-            return this._scanner;
+        numOfWorkers: 2,
+        frequency: 10,
+        decoder: {
+            readers : [{
+                format: "upc_reader",
+                config: {}
+            }]
+        },
+        locate: true
+    },
+    lastResult : null
+};
+
+
+    Quagga.onProcessed(function(result) {
+
+    });
+
+    Quagga.onDetected(function(result) {
+        var code = result.codeResult.code;
+
+        if (App.lastResult !== code) {
+            App.lastResult = code;
+            var $node = null, canvas = Quagga.canvas.dom.image;
+                actualImage = canvas.toDataURL();
+
+            document.querySelector("#upc").value = code;
         }
-    };
-App.init();
+    });
 
-
+document.querySelector("#activate_scan").addEventListener("click", function() {
+    App.init();
+})
                 
                 
    
