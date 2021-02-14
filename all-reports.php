@@ -12,6 +12,8 @@
 </style>
 
 <div class="row">
+
+
     <div class="col-md-12">
         <h2>Inventory</h2>
         <div class="card">
@@ -21,22 +23,22 @@
                     <a class="nav-link inbox-toggle" data-status="active"  href="inventory.php">Inbox</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active inbox-toggle" data-status="archived" href="inventory-archive.php">Archived</a>
+                    <a class="nav-link inbox-toggle" data-status="archived" href="inventory-archive.php">Archived</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link inbox-toggle" data-status="snapshots" href="all-reports.php">Saved Snapshots</a>
+                    <a class="nav-link active inbox-toggle" data-status="snapshots" href="all-reports.php">Saved Snapshots</a>
                 </li>
+
+                
             </ul>
             </div>
             <div class="card-body">
                 <table id="inventory_table" class="table">
                     <thead>
                         <tr>
-                            <th scope="col">UPC</th>
                             <th scope="col">Name</th>
-                            <th scope="col">Rank</th>
-                            <th scope="col">BlameID</th>
+                            <th scope="col">Date Saved</th>
                             <th scope="actions">Actions</th>
                         </tr>
                     </thead>
@@ -62,7 +64,7 @@ function getItems(status) {
     var ret = [];
     var listRef = db.collection("organizations")
     .doc("uconn")
-    .collection("inventory").where("status","==", status);
+    .collection("reports");
 
     listRef.onSnapshot(querySnapshot => {
         document.querySelector("#table_body").innerHTML = "";
@@ -70,13 +72,14 @@ function getItems(status) {
         ret = [];
         querySnapshot.forEach(function(doc) {
             var item = doc.data();
-            item.date_scanned = item.date_scanned.toDate();
+            item.DateSaved = item.DateSaved.toDate();
             item.id = doc.id;
             ret.push(item);
             generateTableRow(item);
         });
         items = ret;
         console.log(items);
+        
         
         
         $("#inventory_table").DataTable();
@@ -88,31 +91,29 @@ function getItems(status) {
 function generateTableRow(item){
     var tr = document.createElement("tr");
         tr.innerHTML = `
-
-            <td>${item.upc}</td>
             <td>${item.name}</td>
-            <td class='${item.rank}'>${item.rank}</td>
-            <td>${item.scanned_by}</td>
-
-        `;
-        
-
-        if(item.status == "active") {
-            tr.innerHTML += `<td><button class='btn btn-sm btn-secondary'>archive</button>`;
-        } else {
-            tr.innerHTML += `<td><button class='btn btn-sm btn-danger'>delete</button>`;
-        }
-        
-
+            <td>${item.DateSaved}</td>
+            <td><a href="single-report.php?id=${item.id}">View</a></td>
+        `;       
     document.querySelector("#table_body").appendChild(tr);
 }
 
 
+function archiveItem(item){
+    item.status = "archived";
+    var db = firebase.firestore();
+        var ret = [];
+        var listRef = db.collection("organizations")
+        .doc("uconn")
+        .collection("inventory").doc(item.id);
+
+        listRef.set(item).then(function(querySnapshot) {
+            console.log("item updated");
+        });
+}
 
 
-
-
-getItems("archived");
+getItems("active");
 //attachToggleEvents();
 
 </script>

@@ -49,7 +49,8 @@
             </div>
             <div class="form-group">
                 <h5>Inventory Options</h5>
-                <a href="#" id="inventory-add" class="btn btn-block btn-secondary">Add to Inventory</a>
+                <a href="#" id="inventory-add" class="btn btn-block btn-outline-info"><i class="bi bi-journal-plus"></i> Send to Inbox</a>
+                <div class="d-none alert" id="inventoryAlert"></div>
             </div>     
         </div>
         <div class="col-md-6">
@@ -86,7 +87,7 @@
 
 
             <div class="form-group">
-                <button id="save" type="submit" class="d-none btn btn-block btn-primary">Save Changes</button>
+                <button id="save" type="submit" class="d-none btn btn-block btn-primary"><i class="bi bi-file-arrow-up"></i> Save Changes to WellSCAN Global</button>
                 <div class="d-none alert" id="saveAlert"></div>
             </div>
         
@@ -214,6 +215,18 @@ function hideFormAlert() {
     alertDiv.classList.add('d-none');
 }
 
+function showInventoryAlert(msg, cl) {
+    var alertDiv = document.querySelector("#inventoryAlert");
+    alertDiv.classList.remove("d-none");
+    alertDiv.classList.add(cl);
+    alertDiv.innerHTML = msg;
+}
+
+function hideFormAlert() {
+    var alertDiv = document.querySelector("#inventoryAlert");
+    alertDiv.classList.add('d-none');
+}
+
 function formChanged() {
     save_button.classList.remove('d-none');
     showFormAlert("You have unsaved changes.", "alert-warning");
@@ -235,7 +248,7 @@ function addFoodToInventory() {
         }
     )
     .then(function(docRef) {
-        showFormAlert("Added to inventory.", "alert-success");
+        showInventoryAlert("Added to inventory.", "alert-success");
         console.log("Your item has been saved with ID " + docRef.id);
     })
     .catch(function(error) {

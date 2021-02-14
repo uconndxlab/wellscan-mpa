@@ -10,9 +10,9 @@
     <nav class="navbar navbar-dark fixed-bottom bg-dark flex-md-nowrap p-2 shadow">
         <form id="the_form" autocomplete="off" method="get" class="w-100 m-1" action="food.php">
             <div class="input-group">
-                <input  class="form-control form-control-dark"  required type = "text" name="upc" id="search_upc">
+                <input  class="form-control form-control-dark"  required type = "text" placeholder="scan a new food" name="upc" id="search_upc">
                 <div class="input-group-append">
-                    <button class="btn-primary btn">search</button>
+                    <button class="btn-primary btn"><i class="bi bi-upc-scan"></i></button>
                 </div>
             </div>        
             <input type="hidden" name="src" value="search">
