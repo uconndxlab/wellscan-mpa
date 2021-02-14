@@ -88,9 +88,9 @@
 <script src="food.js"></script>
 <script>
 
-//let api_url = "https://v2.api.wellscan.io/api/";
+let api_url = "https://v2.api.wellscan.io/api/";
+//let api_url = "http://localhost:8000/api/"
 
-let api_url = "http://localhost:8000/api/"
 let lookup_endpoint = "foods/lookup/";
 let calcRankNuts = "foods/rankFromNuts";
 let upc = "<?php echo $_GET['upc']; ?>";

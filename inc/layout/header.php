@@ -1,5 +1,5 @@
 <?php 
-  $api_url = "http://localhost:8000/api/"
+  $api_url = "https://v2.api.wellscan.io/api/"
 ?>
 
 <!doctype html>
