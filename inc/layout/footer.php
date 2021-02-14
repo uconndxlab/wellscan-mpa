@@ -78,7 +78,7 @@ document.querySelector("#search_upc").addEventListener('focus', function() {
 document.querySelector("#search_upc").addEventListener('blur', function() {
     
     document.querySelector("#interactive").classList.add("d-none");
-    Quagga.stop();
+    //Quagga.stop();
 });
 
  if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
@@ -200,7 +200,7 @@ var App = {
             var $node = null, canvas = Quagga.canvas.dom.image;
                 actualImage = canvas.toDataURL();
             
-            Quagga.stop();
+            //Quagga.stop();
             document.querySelector("#search_upc").value = code;
             document.querySelector("#interactive").classList.add("d-none");
             
