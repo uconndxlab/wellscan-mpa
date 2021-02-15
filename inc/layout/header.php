@@ -43,7 +43,67 @@
   firebase.initializeApp(firebaseConfig);
   var firebaseUserName;
   var firebaseEmail;
+  var firebaseUserOrg;
 </script>
+
+
+
+<script>
+<?php if (basename($_SERVER['PHP_SELF']) !== "login.php"): ?>
+
+  async function checkAuthThen(callback) {
+      firebase.auth().onAuthStateChanged(firebaseUser => {
+          if(firebaseUser){
+              console.log("User is logged in as " + firebaseUser.displayName + ` (${firebaseUser.email})`);
+              firebaseUserName = firebaseUser.displayName;
+              firebaseEmail = firebaseUser.email;
+
+              var db = firebase.firestore();
+
+              var userRef = db.collection("users")
+              .doc(firebaseUser.email);
+
+              userRef.get().then((doc) => {
+              if (doc.exists) {
+                  var info = doc.data();
+                  var org = info.organization;
+                  console.log("User is associated with: " + org)  
+                  firebaseUserOrg = org;
+                  
+                  callback();
+
+              } else {
+                  // doc.data() will be undefined in this case
+                  console.log("No such document!");
+                  }
+              }).catch((error) => {
+                  console.log("Error getting document:", error);
+              });
+
+              
+
+          } else{
+              window.location = "login.php";
+          }
+      });
+
+  <?php else: ?>
+
+      firebase.auth().onAuthStateChanged(firebaseUser => {
+          if(firebaseUser){
+              console.log("User is logged in as " + firebaseUser.displayName + ` (${firebaseUser.email})`);
+              window.location = "index.php"
+          } else{
+              // stay here
+              callback();
+          }
+      });
+  <?php endif; ?>
+
+      
+  }
+</script>
+
 
 <?php if (basename($_SERVER['PHP_SELF']) == "login.php"): ?>
     <script src="https://www.gstatic.com/firebasejs/ui/4.6.1/firebase-ui-auth.js"></script>

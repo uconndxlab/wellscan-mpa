@@ -111,13 +111,12 @@
 <script>
  var items = [];
 function getItems(status) {
-    
-   
+    console.log(firebaseUserOrg);
     var that = this;
     var db = firebase.firestore();
     var ret = [];
     var listRef = db.collection("organizations")
-    .doc("uconn")
+    .doc(firebaseUserOrg)
     .collection("inventory").where("status","==", status);
 
     listRef.onSnapshot(querySnapshot => {
@@ -180,7 +179,7 @@ function archiveItem(item){
     var db = firebase.firestore();
         var ret = [];
         var listRef = db.collection("organizations")
-        .doc("uconn")
+        .doc(firebaseUserOrg)
         .collection("inventory").doc(item.id);
 
         listRef.set(item).then(function(querySnapshot) {
@@ -188,8 +187,10 @@ function archiveItem(item){
         });
 }
 
+checkAuthThen(function(){
+    getItems("active");
+});
 
-getItems("active");
 //attachToggleEvents();
 
 document.querySelector("#addRow").addEventListener("click", function () {
@@ -209,17 +210,21 @@ document.querySelector("#save_snapshot_form").addEventListener("submit", functio
 
     
 
-    var meta = {};
+    var meta = {
+        savedBy:firebaseEmail
+    };
     var snapshotName = document.querySelector("#snapshot_name").value;
 
     var allFieldNames = document.querySelectorAll(".snapshot_custom_field_name");
     var allFieldValues = document.querySelectorAll(".snapshot_custom_field_value");
 
     for (var i=0; i<allFieldNames.length; i++) {
+
         let n = allFieldNames[i].value;
         let v = allFieldValues[i].value;
 
-        meta[n] = v;
+        if(n !== '')
+            meta[n] = v;
     }
 
     var snapshot = {
@@ -229,10 +234,11 @@ document.querySelector("#save_snapshot_form").addEventListener("submit", functio
         items:items
     }
 
+
     var db = firebase.firestore();
 
     var docRef = db.collection("organizations")
-    .doc("uconn")
+    .doc(firebaseUserOrg)
     .collection("reports")
     .doc().set(snapshot).then(() => {
     console.log("Document successfully updated!");

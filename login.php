@@ -1,11 +1,14 @@
 <?php include 'inc/layout/header.php'; ?>
 
-<div class="row h-100 justify-content-center align-items-center">
-    <div class="col-12">
-        
+<div class="row justify-content-center align-items-center">
+    <div class="col-md-12">
         <div id="firebaseui-auth-container"></div>
         <div id="loader">Loading...</div>
     </div>
+</div>
+
+<div class="row" style="margin-top:25px;">
+    <div class="col-md-12"><div class="alert alert-info text-center">Send an email to joel@uconn.edu to set up an account.</div></div>
 </div>
 
 
@@ -37,6 +40,10 @@
             firebase.auth.EmailAuthProvider.PROVIDER_ID,
 
         ],
+
+        // Required to enable one-tap sign-up credential helper.
+        credentialHelper: firebaseui.auth.CredentialHelper.GOOGLE_YOLO,
+        
         // Privacy policy url.
         privacyPolicyUrl: 'index.php'
         };

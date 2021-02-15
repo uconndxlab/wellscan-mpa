@@ -63,7 +63,7 @@ function getItems(status) {
     var db = firebase.firestore();
     var ret = [];
     var listRef = db.collection("organizations")
-    .doc("uconn")
+    .doc(firebaseUserOrg)
     .collection("reports");
 
     listRef.onSnapshot(querySnapshot => {
@@ -104,7 +104,7 @@ function archiveItem(item){
     var db = firebase.firestore();
         var ret = [];
         var listRef = db.collection("organizations")
-        .doc("uconn")
+        .doc(firebaseUserOrg)
         .collection("inventory").doc(item.id);
 
         listRef.set(item).then(function(querySnapshot) {
@@ -113,7 +113,10 @@ function archiveItem(item){
 }
 
 
-getItems("active");
+checkAuthThen(function(){
+    getItems("active");
+})
+
 //attachToggleEvents();
 
 </script>

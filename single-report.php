@@ -79,7 +79,7 @@ function getItems() {
     var db = firebase.firestore();
     var ret = [];
     var docRef = db.collection("organizations")
-    .doc("uconn")
+    .doc(firebaseUserOrg)
     .collection("reports")
     .doc('<?php echo $_GET['id'];?>');
 
@@ -147,7 +147,7 @@ function archiveItem(item){
     var db = firebase.firestore();
         var ret = [];
         var listRef = db.collection("organizations")
-        .doc("uconn")
+        .doc(firebaseUserOrg)
         .collection("inventory").doc(item.id);
 
         listRef.set(item).then(function(querySnapshot) {
@@ -155,8 +155,10 @@ function archiveItem(item){
         });
 }
 
+checkAuthThen(function(){
+    getItems();
+});
 
-getItems();
 //attachToggleEvents();
 
 </script>

@@ -61,7 +61,7 @@ function getItems(status) {
     var db = firebase.firestore();
     var ret = [];
     var listRef = db.collection("organizations")
-    .doc("uconn")
+    .doc(firebaseUserOrg)
     .collection("inventory").where("status","==", status);
 
     listRef.onSnapshot(querySnapshot => {
@@ -111,8 +111,10 @@ function generateTableRow(item){
 
 
 
+checkAuthThen(function(){
+    getItems("archived");
+})
 
-getItems("archived");
 //attachToggleEvents();
 
 </script>

@@ -234,16 +234,16 @@ function formChanged() {
 
 function addFoodToInventory() {
     var db = firebase.firestore();
-   
+   console.log(firebaseUserOrg);
     db.collection("organizations")
-    .doc("uconn")
+    .doc(firebaseUserOrg)
     .collection("inventory")
         .add({
             date_scanned: new Date(),
             name:name_input.value,
             status:"active",
-            rank:rank.rank,
-            upc: upc,
+            rank:rank_select.value,
+            upc: upc_input.value,
             scanned_by:firebaseEmail
         }
     )
@@ -327,7 +327,10 @@ function getFood() {
 
 window.addEventListener("DOMContentLoaded", (e) => {
 
-    getFood();
+    checkAuthThen(function(){
+        getFood();
+    })
+    
 
     nutritionForm.addEventListener("change", function() {
         formChanged();
