@@ -32,43 +32,43 @@
 
 
 <script>
+<?php if (basename($_SERVER['PHP_SELF']) !== "login.php"): ?>
+checkAuthThen(function() {
+    document.querySelector("#search_upc").addEventListener('focus', function() {
+        this.value="";
+        App.init();
+    });
 
+    document.querySelector("#search_upc").addEventListener('blur', function() {
+        
+        document.querySelector("#interactive").classList.add("d-none");
+        //Quagga.stop();
+    });
 
-document.querySelector("#search_upc").addEventListener('focus', function() {
-    this.value="";
-    App.init();
-});
-
-document.querySelector("#search_upc").addEventListener('blur', function() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+    alert("enumerateDevices() not supported.");
     
-    document.querySelector("#interactive").classList.add("d-none");
-    //Quagga.stop();
-});
-
- if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
-  alert("enumerateDevices() not supported.");
-  
-}
-
-var backCamID;
-
-navigator.mediaDevices.enumerateDevices()
-.then(function(devices) {
-  devices.forEach(function(device) {
-    //alert( JSON.stringify(device) );
-    if( device.kind == "videoinput" && device.label.match(/back/) != null ){
-      //alert("Back found!");
-      backCamID = device.deviceId;
     }
-  });
-})
-.catch(function(err) {
-  //alert(err.name + ": " + err.message);
-});
 
-if(typeof(backCamID)=="undefined"){
-  console.log("back camera not found.");
-}
+    var backCamID;
+
+    navigator.mediaDevices.enumerateDevices()
+    .then(function(devices) {
+    devices.forEach(function(device) {
+        //alert( JSON.stringify(device) );
+        if( device.kind == "videoinput" && device.label.match(/back/) != null ){
+        //alert("Back found!");
+        backCamID = device.deviceId;
+        }
+    });
+    })
+    .catch(function(err) {
+    //alert(err.name + ": " + err.message);
+    });
+
+    if(typeof(backCamID)=="undefined"){
+    console.log("back camera not found.");
+    }
 
 var App = {
     init: function() {
@@ -175,9 +175,9 @@ var App = {
 // document.querySelector("#activate_scan").addEventListener("click", function() {
 //     App.init();
 // })
-                
+});               
 </script>
-
+<?php endif;?>
 
 
 </body>

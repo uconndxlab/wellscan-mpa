@@ -80,12 +80,11 @@
                   console.log("Error getting document:", error);
               });
 
-              
-
           } else{
               window.location = "login.php";
           }
       });
+  }    
 
   <?php else: ?>
 
@@ -95,13 +94,13 @@
               window.location = "index.php"
           } else{
               // stay here
-              callback();
+              
           }
       });
-  <?php endif; ?>
+ 
 
       
-  }
+      <?php endif; ?>
 </script>
 
 
@@ -177,9 +176,9 @@ th {
         <a class="nav-link" href="inventory.php">Inventory</a>
       </li>
     </ul>
-    <span class="auth-only navbar-text">
+    <!-- <span class="auth-only navbar-text">
       Logged in as <span id="showUserName">Joel Salisbury <a href="logout.php">Log Out</a></span>
-    </span>
+    </span> -->
   </div>
 </nav>
 <main role="main" class="wrap-all container">
