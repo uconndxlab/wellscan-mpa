@@ -128,16 +128,17 @@ video {
 }
 
 .sometimes, .yellow {
-    background-color: yellow !important;
+    background-color: #ffc107 !important;
+    color:#333;
 }
 
 .often, .green {
-    background-color: green !important;
+    background-color: #28a745 !important;
     color:#fff;
 }
 
 .rarely, .red {
-    background-color: red !important;
+    background-color: #dc3545; !important;
     color:white;
 }
 
@@ -157,6 +158,10 @@ video {
 
 th {
   cursor:pointer;
+}
+
+.table td, .table th {
+  vertical-align:middle;
 }
 
 </style>

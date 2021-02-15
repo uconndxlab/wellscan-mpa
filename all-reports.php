@@ -91,9 +91,9 @@ function getItems(status) {
 function generateTableRow(item){
     var tr = document.createElement("tr");
         tr.innerHTML = `
-            <td>${item.name}</td>
+            <td><a href="single-report.php?id=${item.id}">${item.name}</a></td>
             <td>${item.DateSaved}</td>
-            <td><a href="single-report.php?id=${item.id}">View</a></td>
+            <td></td>
         `;       
     document.querySelector("#table_body").appendChild(tr);
 }

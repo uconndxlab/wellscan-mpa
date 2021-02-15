@@ -13,7 +13,11 @@
 
 <div class="row">
     <div class="col-md-12">
-        <h2>Inventory</h2>
+   
+        <h2>Inventory <span id="snapshot_success" class="d-none badge badge-success">Snapshot Saved!</span></h2>
+
+        
+
         <div class="card">
             <div class="card-header">
             <ul class="nav nav-pills card-header-pills w-100">
@@ -29,7 +33,7 @@
                 </li>
 
                 <li class="nav-item ml-auto">
-                    <a id="save_snapshot_button" href="#" data-toggle="modal" data-target="#save_snapshot_modal"  class="btn btn-block btn-secondary">Save Snapshot</a>
+                    <a id="save_snapshot_button" href="#" data-toggle="modal" data-target="#save_snapshot_modal"  class="btn btn-secondary">Save Snapshot</a>
                 </li>
             </ul>
 
@@ -150,7 +154,7 @@ function generateTableRow(item){
     var tr = document.createElement("tr");
         tr.innerHTML = `
 
-            <td>${item.upc}</td>
+            <td><a href="food.php?upc=${item.upc}">${item.upc}</a></td>
             <td>${item.name}</td>
             <td class='${item.rank}'>${item.rank}</td>
             <td>${item.scanned_by}</td>
@@ -159,16 +163,23 @@ function generateTableRow(item){
 
         var archiveButton = document.createElement('button');
             archiveButton.classList.add("btn", "btn-sm", "btn-secondary");
-            archiveButton.innerHTML = `<i class="bi bi-archive"></i> archive`
+            archiveButton.innerHTML = 'archive'
             archiveButton.addEventListener("click", function () {
                 archiveItem(item);
             });
 
+        var viewLink = document.createElement("a");
+            viewLink.classList.add("btn", "btn-sm", "btn-primary" )
+            viewLink.href="food.php?upc="+ item.upc;
+            viewLink.innerHTML = 'view';
+
         var buttonTD = document.createElement("td");
             buttonTD.appendChild(archiveButton);
+            //buttonTD.appendChild(viewLink);
 
         tr.appendChild(buttonTD);
-        
+
+
 
     document.querySelector("#table_body").appendChild(tr);
 }
@@ -211,7 +222,7 @@ document.querySelector("#save_snapshot_form").addEventListener("submit", functio
     
 
     var meta = {
-        savedBy:firebaseEmail
+        User:firebaseEmail
     };
     var snapshotName = document.querySelector("#snapshot_name").value;
 
@@ -241,12 +252,17 @@ document.querySelector("#save_snapshot_form").addEventListener("submit", functio
     .doc(firebaseUserOrg)
     .collection("reports")
     .doc().set(snapshot).then(() => {
-    console.log("Document successfully updated!");
-})
-.catch((error) => {
-    // The document probably doesn't exist.
-    console.error("Error updating document: ", error);
-});;
+        console.log("Document successfully updated!");
+        document.querySelector("#snapshot_success").classList.remove("d-none");
+        $("#save_snapshot_modal").modal("toggle");
+        setTimeout(function() {
+            document.querySelector("#snapshot_success").classList.add("d-none");
+        }, 2500)
+    })
+    .catch((error) => {
+        // The document probably doesn't exist.
+        console.error("Error updating document: ", error);
+    });;
 
 
     

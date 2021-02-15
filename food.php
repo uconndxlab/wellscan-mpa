@@ -36,7 +36,7 @@
         
             
             <div class="form-group">
-                <h5>Food Information</h5>
+                <h5>Food Information <a href="#" id="flag_item" class="btn btn-link"><i class="bi bi-flag"></i> Flag For Review</a></h5>
                 <div class="form-group"><label for="name">Food Name: </label><input class="form-control" id="name" name="name" type="text" placeholder="Not found."></label></div>
 
                 <label for="rank">Rank: </label> 
@@ -48,9 +48,11 @@
                 </select>
             </div>
             <div class="form-group">
-                <h5>Inventory Options</h5>
+                <h6>Inventory Options</h6>
                 <a href="#" id="inventory-add" class="btn btn-block btn-outline-info"><i class="bi bi-journal-plus"></i> Send to Inbox</a>
                 <div class="d-none alert" id="inventoryAlert"></div>
+
+                
             </div>     
         </div>
         <div class="col-md-6">
@@ -233,7 +235,7 @@ function formChanged() {
 }
 
 function addFoodToInventory() {
-    var db = firebase.firestore();
+   var db = firebase.firestore();
    console.log(firebaseUserOrg);
     db.collection("organizations")
     .doc(firebaseUserOrg)
@@ -254,6 +256,31 @@ function addFoodToInventory() {
     .catch(function(error) {
         console.error("Error adding document: ", error);
    });
+}
+
+function flagFoodForReview() {
+    var btn = document.querySelector("#flag_item");
+    btn.classList.add("disabled");
+    btn.innerHTML = '<i class="bi bi-flag-fill"></i> Flagged For Review';
+    var db = firebase.firestore();
+        db.collection("organizations")
+        .doc(firebaseUserOrg)
+        .collection("flagged")
+            .add({
+                date_scanned: new Date(),
+                name:name_input.value,
+                status:"active",
+                rank:rank_select.value,
+                upc: upc_input.value,
+                scanned_by:firebaseEmail
+            }
+        )
+        .then(function(docRef) {
+            console.log("Your item has been flagged with ID " + docRef.id);
+        })
+        .catch(function(error) {
+            console.error("Error adding document: ", error);
+    });
 }
 
 function getFood() {
@@ -360,6 +387,10 @@ window.addEventListener("DOMContentLoaded", (e) => {
     document.querySelector("#inventory-add").addEventListener("click", function(e){
         e.preventDefault();
         addFoodToInventory();
+    });
+    document.querySelector("#flag_item").addEventListener("click",function(){
+        flagFoodForReview();
+        
     });
 });
 </script>
