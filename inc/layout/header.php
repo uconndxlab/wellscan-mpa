@@ -138,7 +138,7 @@ video {
 }
 
 .rarely, .red {
-    background-color: #dc3545; !important;
+    background-color: #dc3545 !important;
     color:white;
 }
 
