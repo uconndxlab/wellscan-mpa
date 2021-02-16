@@ -177,12 +177,14 @@ var App = {
 // document.querySelector("#activate_scan").addEventListener("click", function() {
 //     App.init();
 // })
-});
-
 
 document.querySelector("#activate_scan").addEventListener("click", function() {
     App.init();
 })
+});
+
+
+
 </script>
 <?php endif;?>
 
