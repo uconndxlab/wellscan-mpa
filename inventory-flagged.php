@@ -12,13 +12,15 @@
 </style>
 
 <div class="row">
-
-
     <div class="col-md-12">
+   
         <h2>Inventory</h2>
+
+        
+
         <div class="card">
             <div class="card-header">
-            <ul class="nav nav-pills card-header-pills">
+            <ul class="nav nav-pills card-header-pills w-100">
                 <li class="nav-item">
                     <a class="nav-link inbox-toggle" data-status="active"  href="inventory.php">Inbox</a>
                 </li>
@@ -27,23 +29,27 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link active inbox-toggle" data-status="snapshots" href="all-reports.php">Saved Snapshots</a>
+                    <a class="nav-link inbox-toggle" data-status="snapshots" href="all-reports.php">Saved Snapshots</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link  inbox-toggle" data-status="snapshots" href="inventory-flagged.php">Flagged Items</a>
+                    <a class="nav-link active inbox-toggle" data-status="snapshots" href="inventory-flagged.php">Flagged Items</a>
                 </li>
 
-                
             </ul>
+
             </div>
+
             <div class="card-body">
+
                 <table id="inventory_table" class="table">
                     <thead>
                         <tr>
+                            <th scope="col">UPC</th>
                             <th scope="col">Name</th>
-                            <th scope="col">Date Saved</th>
-                            <th scope="actions">Actions</th>
+                            <th scope="col">Rank</th>
+                            <th scope="col">Flagged By</th>
+                            <th scope="actions">Remove Flag</th>
                         </tr>
                     </thead>
                     <tbody id="table_body">
@@ -53,22 +59,29 @@
             </div>
         </div>
     </div>
-
 </div>
 
-
-
+<div id="save_snapshot_modal" class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+    <form id="save_snapshot_form" action="">
+      <div class="modal-header">
+        <h5 class="modal-title">Save a Snapshot (<span id="items_count"></span> items)</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      
 <script>
-
+ var items = [];
 function getItems(status) {
-    
-    var items = [];
+    console.log(firebaseUserOrg);
     var that = this;
     var db = firebase.firestore();
     var ret = [];
     var listRef = db.collection("organizations")
     .doc(firebaseUserOrg)
-    .collection("reports");
+    .collection("flagged").orderBy("date_scanned");
 
     listRef.onSnapshot(querySnapshot => {
         document.querySelector("#table_body").innerHTML = "";
@@ -76,17 +89,20 @@ function getItems(status) {
         ret = [];
         querySnapshot.forEach(function(doc) {
             var item = doc.data();
-            item.DateSaved = item.DateSaved.toDate();
+            item.date_scanned = item.date_scanned.toDate();
             item.id = doc.id;
             ret.push(item);
             generateTableRow(item);
         });
         items = ret;
-        console.log(items);
+        
         
         
         
         $("#inventory_table").DataTable();
+
+
+       
     })
    
 }
@@ -95,45 +111,56 @@ function getItems(status) {
 function generateTableRow(item){
     var tr = document.createElement("tr");
         tr.innerHTML = `
-            <td><a href="single-report.php?id=${item.id}">${item.name}</a></td>
-            <td>${item.DateSaved}</td>
-        `;       
 
-        var deleteButton = document.createElement("button");
-            deleteButton.classList.add("btn", "btn-sm", "btn-danger");
-            deleteButton.innerHTML =  "delete";
-            deleteButton.addEventListener("click", function(){
-                deleteSnapshot(item);
+            <td><a href="food.php?upc=${item.upc}">${item.upc}</a></td>
+            <td>${item.name}</td>
+            <td class='${item.rank}'>${item.rank}</td>
+            <td>${item.scanned_by}</td>
+
+        `;
+
+        var archiveButton = document.createElement('button');
+            archiveButton.classList.add("btn", "btn-sm", "btn-secondary");
+            archiveButton.innerHTML = 'remove flag'
+            archiveButton.addEventListener("click", function () {
+                removeFlag(item);
             });
-        
 
-        var deleteTd = document.createElement("td");
-            deleteTd.appendChild(deleteButton);
-        tr.appendChild(deleteTd);
+        var viewLink = document.createElement("a");
+            viewLink.classList.add("btn", "btn-sm", "btn-primary" )
+            viewLink.href="food.php?upc="+ item.upc;
+            viewLink.innerHTML = 'view';
+
+        var buttonTD = document.createElement("td");
+            buttonTD.appendChild(archiveButton);
+            //buttonTD.appendChild(viewLink);
+
+        tr.appendChild(buttonTD);
+
+
 
     document.querySelector("#table_body").appendChild(tr);
 }
 
 
-function deleteSnapshot(item) {
+function removeFlag(item){
+
     var db = firebase.firestore();
     var ret = [];
     var listRef = db.collection("organizations")
     .doc(firebaseUserOrg)
-    .collection("reports").doc(item.id);
+    .collection("flagged").doc(item.id);
 
     listRef.delete(item).then(function(querySnapshot) {
         console.log("item deleted");
     });
 }
 
-
 checkAuthThen(function(){
     getItems("active");
-})
+});
 
 //attachToggleEvents();
-
 </script>
 
 

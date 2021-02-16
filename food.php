@@ -60,7 +60,7 @@
 
             <div class="col-12"><a class="d-none btn btn-secondary btn-block" id="calculate_rank" href="javascript:void(0);">Calculate Rank</a></div>
 
-            <h5>Ranking Information</h5>
+            <h5>Food Category</h5>
             <div class="form-group" id="all_categories">
                 <div class="radio"><input type="radio" name="category" id="fruit-vegetable" value="fruit-vegetable"><label for="fruit-vegetable">Fruit/Vegetable</label></div>
                 <div class="radio"><input type="radio" name="category" id="protein" value="protein"><label for="protein">Protein</label></div>

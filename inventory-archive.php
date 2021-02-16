@@ -27,6 +27,10 @@
                 <li class="nav-item">
                     <a class="nav-link inbox-toggle" data-status="snapshots" href="all-reports.php">Saved Snapshots</a>
                 </li>
+
+                <li class="nav-item">
+                    <a class="nav-link inbox-toggle" data-status="snapshots" href="inventory-flagged.php">Flagged Items</a>
+                </li>
             </ul>
             </div>
             <div class="card-body">
@@ -95,18 +99,34 @@ function generateTableRow(item){
             <td>${item.scanned_by}</td>
 
         `;
+
+        var deleteButton = document.createElement("button");
+            deleteButton.classList.add("btn", "btn-sm", "btn-danger");
+            deleteButton.innerHTML =  "delete";
+            deleteButton.addEventListener("click", function(){
+                deleteItemFromInventory(item);
+            });
         
 
-        if(item.status == "active") {
-            tr.innerHTML += `<td><button class='btn btn-sm btn-secondary'>archive</button>`;
-        } else {
-            tr.innerHTML += `<td><button class='btn btn-sm btn-danger'>delete</button>`;
-        }
+        var deleteTd = document.createElement("td");
+            deleteTd.appendChild(deleteButton);
+        tr.appendChild(deleteTd);
         
 
     document.querySelector("#table_body").appendChild(tr);
 }
 
+function deleteItemFromInventory(item) {
+    var db = firebase.firestore();
+    var ret = [];
+    var listRef = db.collection("organizations")
+    .doc(firebaseUserOrg)
+    .collection("inventory").doc(item.id);
+
+    listRef.delete(item).then(function(querySnapshot) {
+        console.log("item deleted");
+    });
+}
 
 
 

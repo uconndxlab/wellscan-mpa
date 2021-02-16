@@ -32,6 +32,10 @@
                     <a class="nav-link inbox-toggle" data-status="snapshots" href="all-reports.php">Saved Snapshots</a>
                 </li>
 
+                <li class="nav-item">
+                    <a class="nav-link inbox-toggle" data-status="snapshots" href="inventory-flagged.php">Flagged Items</a>
+                </li>
+
                 <li class="nav-item ml-auto">
                     <a id="save_snapshot_button" href="#" data-toggle="modal" data-target="#save_snapshot_modal"  class="btn btn-secondary">Save Snapshot</a>
                 </li>

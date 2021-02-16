@@ -27,11 +27,11 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link inbox-toggle" data-status="snapshots" href="all-reports.php">Saved Snapshots</a>
+                    <a class="nav-link active inbox-toggle" data-status="snapshots" href="all-reports.php">Saved Snapshots</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link active inbox-toggle" data-status="snapshots" href="single-report.php?id=<?php echo $_GET['id']; ?>">Single Snapshot</a>
+                    <a class="nav-link inbox-toggle" data-status="snapshots" href="inventory-flagged.php">Flagged Items</a>
                 </li>
 
                 <li class="nav-item ml-auto">
@@ -71,10 +71,10 @@
 
 
 <script>
-
+var items = [];
 function getItems() {
     
-    var items = [];
+
     var that = this;
     var db = firebase.firestore();
     var ret = [];
@@ -118,10 +118,13 @@ function populateMeta(meta) {
 }
 
 function populateItems(items) {
-     for (var i = 0; i<items.length; i++) {
-        var item = items[i];
-        generateTableRow(item);
-      }
+    document.querySelector("#table_body").innerHTML = "";
+    if (typeof items !== "undefined") {
+        for (var i = 0; i<items.length; i++) {
+            var item = items[i];
+            generateTableRow(item);
+        }
+    }
 }
 
 function generateTableRow(item){
@@ -135,25 +138,40 @@ function generateTableRow(item){
 
         `;
 
+        var deleteButton = document.createElement("button");
+            deleteButton.classList.add("btn", "btn-sm", "btn-danger");
+            deleteButton.innerHTML =  "remove from snapshot";
+            deleteButton.addEventListener("click", function(){
+                deleteItem(item);
+            });
+        
 
+        var deleteTd = document.createElement("td");
+            deleteTd.appendChild(deleteButton);
+        tr.appendChild(deleteTd);
         
 
     document.querySelector("#table_body").appendChild(tr);
 }
 
-
-function archiveItem(item){
-    item.status = "archived";
-    var db = firebase.firestore();
-        var ret = [];
-        var listRef = db.collection("organizations")
-        .doc(firebaseUserOrg)
-        .collection("inventory").doc(item.id);
-
-        listRef.set(item).then(function(querySnapshot) {
-            console.log("item updated");
-        });
+function deleteItem(item) {
+   console.log(item);
+   var db = firebase.firestore();
+   var docRef = db.collection("organizations")
+    .doc(firebaseUserOrg)
+    .collection("reports")
+    .doc('<?php echo $_GET['id'];?>')
+    .update(
+        {
+            "items" : firebase.firestore.FieldValue.arrayRemove(item) 
+        }
+    ).then(function(querySnapshot) {
+        populateItems();
+        console.log("item deleted");
+    });
 }
+
+
 
 checkAuthThen(function(){
     getItems();
