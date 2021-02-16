@@ -39,12 +39,13 @@
                 <h5>Food Information <a href="#" id="flag_item" class="btn btn-link"><i class="bi bi-flag"></i> Flag For Review</a></h5>
                 <div class="form-group"><label for="name">Food Name: </label><input class="form-control" id="name" name="name" type="text" placeholder="Not found."></label></div>
 
-                <label for="rank">Rank: </label> 
+                <label for="rank">Rank: <span id="rank_reminder" class="badge badge-info">confirm nutrients and select a category to obtain a rank.</span></label> 
                 <select class="form-control" disabled name="rank" id="rank">
-                    <option value="unranked">--</option>
+                    <option value="--">--</option>
                     <option value="rarely">Rarely</option>
                     <option value="sometimes">Sometimes</option>
                     <option value="often">Often</option>
+                    <option value="unranked">Unranked</option>
                 </select>
             </div>
             <div class="form-group">
@@ -70,8 +71,11 @@
                 <div class="radio"><input type="radio" name='category' id="beverage" value="beverage"><label for="beverage">Beverage</label></div>
                 <div class="radio"><input type="radio" name='category' id="mixed-dish" value="mixed-dish"><label for="mixed-dish">Mixed Dish</label></div>
                 <div class="radio"><input type="radio" name='category' id="snack-whole-grain" value="snack-whole-grain"><label for="snack-whole-grain" >Whole Grain Snack</label></div>
+                <div class="radio"><input type="radio" name='category' id="processed-packaged-snack" value="processed-packaged-snack"><label for="processed-packaged-snack" >Snack</label></div>
                 <div class="radio"><input type="radio" name='category' id="grain-whole" value="grain-whole"><label for="grain-whole" >Whole Grain</label></div>
                 <div class="radio"><input type="radio" name='category' id="grain" value="grain"><label for="grain">Non-Whole Grain</label></div>
+                <div class="radio"><input type="radio" name='category' id="dessert" value="dessert"><label for="dessert">Dessert</label></div>
+                <div class="radio"><input type="radio" name='category' id="baking-supplies-condiments" value="baking-supplies-condiments"><label for="baking-supplies-condiments">Baking Supplies/Condiments</label></div>
             </div>
 
             <h5>Nutrient Info</h5>
@@ -105,8 +109,8 @@
 <script src="food.js"></script>
 <script>
 
-let api_url = "https://v2.api.wellscan.io/api/";
-//let api_url = "http://localhost:8000/api/"
+//let api_url = "https://v2.api.wellscan.io/api/";
+let api_url = "http://localhost:8000/api/"
 
 let lookup_endpoint = "foods/lookup/";
 let calcRankNuts = "foods/rankFromNuts";
@@ -145,14 +149,22 @@ function calcRank() {
                 switch(data.rank) {
                     case "rarely":
                         document.querySelector("#rank").selectedIndex = 1;
+                        document.querySelector("#rank_reminder").classList.add("d-none");
                     break;
 
                     case "sometimes":
                         document.querySelector("#rank").selectedIndex = 2;
+                        document.querySelector("#rank_reminder").classList.add("d-none");
                     break;
 
                     case "often":
                         document.querySelector("#rank").selectedIndex = 3;
+                        document.querySelector("#rank_reminder").classList.add("d-none");
+                    break;
+
+                    case "unranked":
+                        document.querySelector("#rank").selectedIndex = 4;
+                        document.querySelector("#rank_reminder").classList.add("d-none");
                     break;
 
                     default:
@@ -311,14 +323,22 @@ function getFood() {
                     switch(data.rankings.swap.rank) {
                         case "rarely":
                             rank = {value:1, rank: "rarely"}
+                            document.querySelector("#rank_reminder").classList.add("d-none");
                         break;
             
                         case "sometimes":
                             rank = {value:2, rank: "sometimes"}
+                            document.querySelector("#rank_reminder").classList.add("d-none");
                         break;
             
                         case "often":
                             rank = {value:3, rank:"often"}
+                            document.querySelector("#rank_reminder").classList.add("d-none");
+                        break;
+
+                        case "unranked":
+                            rank = {value:4, rank:"unranked"}
+                            document.querySelector("#rank_reminder").classList.add("d-none");
                         break;
                     }
 

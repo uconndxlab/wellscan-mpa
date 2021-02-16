@@ -26,7 +26,30 @@
 
 
 
-
+<div class="modal fade" id="bugReportModal">
+  <div class="modal-dialog" role="document">
+    <form action="#" id="bugReport_form">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Report a Bug</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" name="current_page" id="input_current_page" value="<?php echo basename($_SERVER['PHP_SELF']); ?>">
+        <div class="form-group">
+                <label for="bugText">Description <small>(your email address, current page, and organization will be automatically included in the bug report)</small></label>
+                <textarea class="form-control" id="bugText" rows="3"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-block btn-primary">Submit Bug Report</button>
+      </div>
+    </div>
+    </form>
+  </div>
+</div>
 
 
 
@@ -34,6 +57,30 @@
 <script>
 <?php if (basename($_SERVER['PHP_SELF']) !== "login.php"): ?>
 checkAuthThen(function() {
+
+    document.querySelector("#bugReport_form").addEventListener("submit", function(e){
+        e.preventDefault();
+        var db = firebase.firestore();
+        console.log(firebaseUserOrg);
+        db.collection("bugReports")
+            .add({
+                date_reported: new Date(),
+                current_page:document.querySelector("#input_current_page").value,
+                org:firebaseUserOrg,
+                usr:firebaseEmail,
+                description:document.querySelector("#bugText").value
+            }
+        )
+        .then(function(docRef) {
+            $("#bugReportModal").modal('hide');
+            document.querySelector("#bugReport_form").reset();
+            console.log("Your bug has been saved with ID " + docRef.id);
+        })
+        .catch(function(error) {
+            console.error("Error adding document: ", error);
+    });
+    });
+
     document.querySelector("#search_upc").addEventListener('focus', function() {
         this.value="";
         App.init();
@@ -174,13 +221,13 @@ var App = {
         }
     });
 
-// document.querySelector("#activate_scan").addEventListener("click", function() {
-//     App.init();
-// })
+    // document.querySelector("#activate_scan").addEventListener("click", function() {
+    //     App.init();
+    // })
 
-document.querySelector("#activate_scan").addEventListener("click", function() {
-    App.init();
-})
+    document.querySelector("#activate_scan").addEventListener("click", function() {
+        App.init();
+    })
 });
 
 

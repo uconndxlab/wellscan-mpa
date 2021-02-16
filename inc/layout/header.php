@@ -69,6 +69,13 @@
                   var org = info.organization;
                   console.log("User is associated with: " + org)  
                   firebaseUserOrg = org;
+
+                  var authItems = document.querySelectorAll(".auth-only")
+                  authItems.forEach(function(item, i) {
+                    item.classList.remove("d-none");
+                  });
+
+                  document.querySelector("#showUserEmail").innerHTML = `${firebaseEmail} (${org})`;
                   
                   callback();
 
@@ -169,7 +176,7 @@ th {
 <body class="bg-light">
 <nav class="navbar navbar-expand-lg sticky-top navbar-dark bg-dark">
   <a class="navbar-brand" href="index.php">WellSCAN</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation" >
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarText">
@@ -181,9 +188,10 @@ th {
         <a class="nav-link" href="inventory.php">Inventory</a>
       </li>
     </ul>
-    <!-- <span class="auth-only navbar-text">
-      Logged in as <span id="showUserName">Joel Salisbury <a href="logout.php">Log Out</a></span>
-    </span> -->
+    <span style="font-size:0.75em;" class="auth-only navbar-text d-none">
+      Logged in as <span id="showUserEmail"></span> <a href="logout.php">Log Out</a>
+    </span>
   </div>
 </nav>
 <main role="main" class="wrap-all container">
+<div class="row"><div class="col-md-12 text-right"><a href="bug-report.php" data-toggle="modal" data-target="#bugReportModal" class="ml-auto btn-sm btn-info"><i class="bi bi-bug"></i> Report a Bug</a></div></div>

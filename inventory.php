@@ -14,7 +14,7 @@
 <div class="row">
     <div class="col-md-12">
    
-        <h2>Inventory <span id="snapshot_success" class="d-none badge badge-success">Snapshot Saved!</span></h2>
+        <h2>Inbox <span id="snapshot_success" class="d-none badge badge-success">Snapshot Saved!</span></h2>
 
         
 
