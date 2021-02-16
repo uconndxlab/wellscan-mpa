@@ -30,9 +30,7 @@
 
 <script>
     document.querySelector("#search_upc").focus();  
-    document.querySelector("#activate_scan").addEventListener("click", function() {
-        App.init();
-    })
+
 </script>
 
 <?php include 'inc/layout/footer.php';?>

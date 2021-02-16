@@ -12,7 +12,7 @@
             <div class="input-group">
                 <input  class="form-control form-control-dark"  required type = "text" placeholder="scan a new food" name="upc" id="search_upc">
                 <div class="input-group-append">
-                    <button class="btn-primary btn"><i class="bi bi-upc-scan"></i></button>
+                    <button class="btn-primary btn" id="activate_scan"><i class="bi bi-upc-scan"></i></button>
                 </div>
             </div>        
             <input type="hidden" name="src" value="search">
@@ -69,6 +69,8 @@ checkAuthThen(function() {
     if(typeof(backCamID)=="undefined"){
     console.log("back camera not found.");
     }
+
+
 
 var App = {
     init: function() {
@@ -175,7 +177,12 @@ var App = {
 // document.querySelector("#activate_scan").addEventListener("click", function() {
 //     App.init();
 // })
-});               
+});
+
+
+document.querySelector("#activate_scan").addEventListener("click", function() {
+    App.init();
+})
 </script>
 <?php endif;?>
 
