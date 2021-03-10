@@ -1,3 +1,7 @@
+<?php
+    $title = "Food Information"
+?>
+
 <?php include 'inc/layout/header.php'; ?>
 
 
@@ -15,7 +19,7 @@
     display: inline-block;
     border: 1px solid #24474c;
     padding: 3px 10px;
-    border-radius: 36px;
+    border-radius: 0px;
     position: relative;
     cursor: pointer;
     transition: .1s ease-in-out;
@@ -28,6 +32,14 @@
     color: #fff;
   }
 
+  .h-100 {
+      height:auto!important;
+  }
+
+  [role="main"] {
+    padding-bottom: 100px;
+}
+
 </style>
  
     <form id="foodNutritionInfo" method="POST" autcomplete="off" class="row h-100 justify-content-center">
@@ -39,7 +51,7 @@
                 <h5>Food Information <a href="#" id="flag_item" class="btn btn-link"><i class="bi bi-flag"></i> Flag For Review</a></h5>
                 <div class="form-group"><label for="name">Food Name: </label><input class="form-control" id="name" name="name" type="text" placeholder="Not found."></label></div>
 
-                <label for="rank">Rank: <span id="rank_reminder" class="badge badge-info">confirm nutrients and select a category to obtain a rank.</span></label> 
+                <label for="rank">Rank: <small id="rank_reminder">confirm nutrients and select a category to obtain a rank.</small></label> 
                 <select class="form-control" disabled name="rank" id="rank">
                     <option value="--">--</option>
                     <option value="rarely">Rarely</option>
