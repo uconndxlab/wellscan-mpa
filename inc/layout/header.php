@@ -155,6 +155,10 @@ video {
     background-color: #ccc; !important;
 }
 
+#inventory_table_filter input {
+    margin-left: 5px;
+    border: 1px solid #ccc;
+}
 
 
 .drawingBuffer {
