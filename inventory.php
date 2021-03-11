@@ -1,3 +1,9 @@
+<?php 
+
+$title = "Inventory";
+
+?>
+
 <?php include 'inc/layout/header.php'; ?>
 
 <style>
@@ -13,10 +19,7 @@
 
 <div class="row">
     <div class="col-md-12">
-   
-        <h2>Inbox <span id="snapshot_success" class="d-none badge badge-success">Snapshot Saved!</span></h2>
-
-        
+         
 
         <div class="card">
             <div class="card-header">

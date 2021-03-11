@@ -125,7 +125,7 @@ html {
 }
 
 body,html{
-    min-height:100%;
+    height:100%;
 }
 
 body {
@@ -155,6 +155,10 @@ video {
     background-color: #ccc; !important;
 }
 
+#inventory_table_filter input {
+    margin-left: 5px;
+    border: 1px solid #ccc;
+}
 
 
 .drawingBuffer {
@@ -174,10 +178,16 @@ th {
 }
 
 </style>
+
+<?php 
+if (!isset($title)) 
+  $title="WellSCAN";
+?>
+
 </head>
 <body class="bg-light">
 <nav class="navbar navbar-expand-lg sticky-top navbar-dark bg-dark">
-  <a class="navbar-brand" href="index.php">WellSCAN</a>
+  <a class="navbar-brand" href="index.php"><?php echo $title; ?></a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation" >
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -190,10 +200,13 @@ th {
         <a class="nav-link" href="inventory.php">Inventory</a>
       </li>
     </ul>
+    <span style="margin-right:10px;">
+      <a href="bug-report.php" data-toggle="modal" data-target="#bugReportModal" class="ml-auto btn-sm btn-info"><i class="bi bi-bug"></i> Report a Bug</a>
+    </span>
     <span style="font-size:0.75em;" class="auth-only navbar-text d-none">
       Logged in as <span id="showUserEmail"></span> <a href="logout.php">Log Out</a>
     </span>
   </div>
 </nav>
-<main role="main" class="wrap-all container">
-<div class="row"><div class="col-md-12 text-right"><a href="bug-report.php" data-toggle="modal" data-target="#bugReportModal" class="ml-auto btn-sm btn-info"><i class="bi bi-bug"></i> Report a Bug</a></div></div>
+<main role="main" class="wrap-all container-fluid h-100">
+<div class="row"><div class="col-md-12 text-right"></div></div>

@@ -1,35 +1,34 @@
+<?php
+    $title = "Food Search";
+?>
 <?php include 'inc/layout/header.php'; ?>
 
 <style>
 .drawingBuffer {display:none;}
+.jumbotron {
+    background-color:var(--orange);
+    color:var(--white);
+}
 </style>
-<h3>Food Search</h3>
 <div class="row h-100 justify-content-center align-items-center">
-    <form id="the_form" method="get" class="col-12" action="food.php" autocomplete="off">
-        <div class="form-group">
-            <label for="upc">Look up a Food</label>
-            <div class="input-group">
-                <input class="form-control form-control-lg" placeholder="scan or enter a UPC"  required type = "text" name="upc" id="search_upc">
-                <div class="input-group-append">
-                    <button type="button" id="activate_scan" class="btn btn-secondary"><i class="bi bi-upc-scan"></i></button>
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <input type="hidden" name="src" value="search">
-            <button type="submit" class="btn btn-lg btn-block btn-primary" id="btn_search">Look Up Food</button>
-        </div>
-        <div id="interactive" style="position:relative;display:flex;" class="viewport justify-content-center align-items-center">
-            <div style="position:absolute;border:5px solid white;width:80%;z-index:9999;opacity:0.75"></div>
-        </div>
-    </form>
+    <div class="col-12 text-center">
+        <img src="logo.png" class="img-fluid">
+        <div class="alert alert-info">Scan a barcode or enter a UPC to get started.</div>
+    </div>
 </div>
+
+
 
 
 
 
 <script>
     document.querySelector("#search_upc").focus();  
+
+    document.querySelector("#search_upc").addEventListener("keyup", function() {
+        console.log("keyup");
+        document.querySelector("#btn_search").classList.remove("d-none");
+    });
 
 </script>
 

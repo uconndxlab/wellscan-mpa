@@ -6,7 +6,7 @@
 
 
 
-<?php if (basename($_SERVER['PHP_SELF']) != "index.php"): ?>
+
     <nav class="navbar navbar-dark fixed-bottom bg-dark flex-md-nowrap p-2 shadow">
         <form id="the_form" autocomplete="off" method="get" class="w-100 m-1" action="food.php">
             <div class="input-group">
@@ -22,7 +22,6 @@
             </div>
         </form>
     </nav>
-<?php endif; ?>
 
 
 
@@ -50,9 +49,6 @@
     </form>
   </div>
 </div>
-
-
-
 
 <script>
 <?php if (basename($_SERVER['PHP_SELF']) !== "login.php"): ?>
@@ -114,7 +110,7 @@ checkAuthThen(function() {
     });
 
     if(typeof(backCamID)=="undefined"){
-    console.log("back camera not found.");
+        console.log("back camera not found.");
     }
 
 

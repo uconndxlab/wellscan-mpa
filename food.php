@@ -1,3 +1,7 @@
+<?php
+    $title = "Food Information"
+?>
+
 <?php include 'inc/layout/header.php'; ?>
 
 
@@ -11,58 +15,64 @@
 
  .radio input + label {
     box-shadow: 2px 2px 12px #44444414;
-
+    font-size:11px;
     display: inline-block;
-    border: 1px solid #24474c;
-    padding: 3px 10px;
-    border-radius: 36px;
+    border: 1px solid var(--orange);
+    padding: 3px 5px;
+    font-size:10px;
+    border-radius: 0px;
     position: relative;
     cursor: pointer;
+    text-align:center;
     transition: .1s ease-in-out;
 }
 
    
 .radio input:checked + label{
-    border-color: #24474c;
-    background: #30595F;
+    background: var(--orange);
     color: #fff;
   }
+
+  .h-100 {
+      height:auto!important;
+  }
+
+  [role="main"] {
+    padding-bottom: 100px;
+}
 
 </style>
  
     <form id="foodNutritionInfo" method="POST" autcomplete="off" class="row h-100 justify-content-center">
         
         <div class="col-md-6">
-        
-            
             <div class="form-group">
-                <h5>Food Information <a href="#" id="flag_item" class="btn btn-link"><i class="bi bi-flag"></i> Flag For Review</a></h5>
-                <div class="form-group"><label for="name">Food Name: </label><input class="form-control" id="name" name="name" type="text" placeholder="Not found."></label></div>
+                
+                <div class="form-group">
+                    <input class="form-control form-control-sm" id="name" name="name" type="text" placeholder="Food not found."></label>
+                </div>
 
-                <label for="rank">Rank: <span id="rank_reminder" class="badge badge-info">confirm nutrients and select a category to obtain a rank.</span></label> 
-                <select class="form-control" disabled name="rank" id="rank">
+                <div class="form-group"><label for="upc">UPC: </label>
+                <input class="form-control form-control-sm" disabled type="text" value="<?php echo $_GET['upc']; ?>" id="upc" name="upc">
+                </div>
+
+
+                <label for="rank">Rank: <small id="rank_reminder">confirm nutrients and select a category to obtain a rank.</small></label> 
+                <select class="form-control form-control-sm" disabled name="rank" id="rank">
                     <option value="--">--</option>
                     <option value="rarely">Rarely</option>
                     <option value="sometimes">Sometimes</option>
                     <option value="often">Often</option>
                     <option value="unranked">Unranked</option>
                 </select>
-            </div>
-            <div class="form-group">
-                <h6>Inventory Options</h6>
-                <a href="#" id="inventory-add" class="btn btn-block btn-outline-info"><i class="bi bi-journal-plus"></i> Send to Inbox</a>
-                <div class="d-none alert" id="inventoryAlert"></div>
-
-                
-            </div>     
+            </div>   
         </div>
         <div class="col-md-6">
 
 
             <div class="col-12"><a class="d-none btn btn-secondary btn-block" id="calculate_rank" href="javascript:void(0);">Calculate Rank</a></div>
 
-            <h5>Food Category</h5>
-            <div class="form-group" id="all_categories">
+            <div class="form-group" id="all_categories" style="overflow-x:scroll">
                 <div class="radio"><input type="radio" name="category" id="fruit-vegetable" value="fruit-vegetable"><label for="fruit-vegetable">Fruit/Vegetable</label></div>
                 <div class="radio"><input type="radio" name="category" id="protein" value="protein"><label for="protein">Protein</label></div>
                 <div class="radio"><input type="radio" name="category" id="dairy" value="dairy"><label for="dairy">Dairy</label></div>
@@ -78,19 +88,31 @@
                 <div class="radio"><input type="radio" name='category' id="baking-supplies-condiments" value="baking-supplies-condiments"><label for="baking-supplies-condiments">Baking Supplies/Condiments</label></div>
             </div>
 
-            <h5>Nutrient Info</h5>
-            <div class="form-group"><label for="upc">UPC: </label><input class="form-control" disabled type="text" value="<?php echo $_GET['upc']; ?>" id="upc" name="upc"></p></div>
-            <div class="form-group"><label for="saturated_fat">Saturated Fat: </label><input class="form-control" name="saturated_fat" id="saturated_fat" type="text" placeholder="Not found."></div>
-            <div class="form-group"><label for="sodium">Sodium: </label> <input class="form-control" id="sodium" name="sodium" type="text" placeholder="Not found."></div>
-            <div class="form-group"><label for="sugars">Sugars: </label> <input class="form-control" id="sugars" name="sugars" type="text" placeholder="Not found."></div>
 
-            <div class="form-group"><label for="nutrition_source">Nutrition Source: </label> <input disabled id="nutrition_source" class="form-control" name="nutrition_source" type="text" placeholder="Not found." /></div>
+            <div class="form-group">
+                <a href="javascript:void(0);" class="btn btn-sm btn-block btn-dark text-left" 
+                data-toggle="collapse" data-target="#nutrients">
+                <i class="bi bi-arrow-down-circle"></i>
+                Nutrient Info</a>
+                <div style="margin-top:10px" class="collapse" id="nutrients">
+                    <div class="form-group"><label for="saturated_fat">Saturated Fat: </label><input class="form-control form-control-sm" name="saturated_fat" id="saturated_fat" type="text" placeholder="Not found."></div>
+                    <div class="form-group"><label for="sodium">Sodium: </label> <input class="form-control form-control-sm" id="sodium" name="sodium" type="text" placeholder="Not found."></div>
+                    <div class="form-group"><label for="sugars">Sugars: </label> <input class="form-control form-control-sm" id="sugars" name="sugars" type="text" placeholder="Not found."></div>
 
+                    <div class="form-group"><label for="nutrition_source">Nutrition Source: </label> <input disabled id="nutrition_source" class="form-control" name="nutrition_source" type="text" placeholder="Not found." /></div>
+                </div>
+            </div>
 
             <div class="col-12">
                 <div class="d-none alert" id="catAlert"></div>
             </div>
 
+            <div class = "form-group">
+            <a href="#" id="flag_item" class="btn btn-info btn-sm btn-inline"><i id="icon_flag" class="bi bi-flag"></i> Flag For Review</a>
+
+                <a href="#" id="inventory-add" class="btn btn-sm btn-inline btn-outline-info"><i class="bi bi-journal-plus"></i> Send to Inbox</a>
+                <div class="d-none alert" id="inventoryAlert"></div>
+            </div>  
 
             <div class="form-group">
                 <button id="save" type="submit" class="d-none btn btn-block btn-primary"><i class="bi bi-file-arrow-up"></i> Save Changes to WellSCAN Global</button>
@@ -98,6 +120,8 @@
             </div>
         
             </div>
+
+
 
         </div>
 
@@ -272,8 +296,11 @@ function addFoodToInventory() {
 
 function flagFoodForReview() {
     var btn = document.querySelector("#flag_item");
+    document.querySelector("#icon_flag").classList.add("bi-flag-fill");
+    document.querySelector("#icon_flag").classList.remove("bi-flag");
+
     btn.classList.add("disabled");
-    btn.innerHTML = '<i class="bi bi-flag-fill"></i> Flagged For Review';
+    // btn.innerHTML = '<i class="bi bi-flag-fill"></i> Flagged For Review';
     var db = firebase.firestore();
         db.collection("organizations")
         .doc(firebaseUserOrg)
