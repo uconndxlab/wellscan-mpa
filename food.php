@@ -15,18 +15,16 @@
 
  .radio input + label {
     box-shadow: 2px 2px 12px #44444414;
-    font-size:11px;
+    font-size:12px;
     display: inline-block;
-    border: 1px solid var(--orange);
-    padding: 3px 5px;
-    font-size:10px;
-    border-radius: 0px;
+    padding: 3px 10px;
+    border-radius: 36px;
     position: relative;
     cursor: pointer;
     text-align:center;
+    background-color:#DFDFDF;
     transition: .1s ease-in-out;
 }
-
    
 .radio input:checked + label{
     background: var(--orange);
@@ -41,30 +39,44 @@
     padding-bottom: 100px;
 }
 
+textarea.form-control {
+    font-size:18px;
+    border:none;
+    font-weight:600;
+}
+
+#upc {
+    background-color:transparent!important;
+    border:none;
+
+}
+
+#rank {
+    border:none;
+}
+
 </style>
  
     <form id="foodNutritionInfo" method="POST" autcomplete="off" class="row h-100 justify-content-center">
         
         <div class="col-md-6">
             <div class="form-group">
-                
+            <a href="#" id="flag_item" style="float:right;" class="btn btn-info btn-sm btn-inline-block"><i id="icon_flag" class="bi bi-flag"></i> Flag For Review</a>
                 <div class="form-group">
-                    <input class="form-control form-control-sm" id="name" name="name" type="text" placeholder="Food not found."></label>
+                    <textarea class="form-control" id="name" name="name" type="text" placeholder="Food not found."></textarea>
+                    <input class="form-control form-control-sm" disabled type="text" value="<?php echo $_GET['upc']; ?>" id="upc" name="upc">
                 </div>
 
-                <div class="form-group"><label for="upc">UPC: </label>
-                <input class="form-control form-control-sm" disabled type="text" value="<?php echo $_GET['upc']; ?>" id="upc" name="upc">
-                </div>
-
-
-                <label for="rank">Rank: <small id="rank_reminder">confirm nutrients and select a category to obtain a rank.</small></label> 
-                <select class="form-control form-control-sm" disabled name="rank" id="rank">
-                    <option value="--">--</option>
-                    <option value="rarely">Rarely</option>
-                    <option value="sometimes">Sometimes</option>
-                    <option value="often">Often</option>
-                    <option value="unranked">Unranked</option>
-                </select>
+                <div class="d-none">
+                    <label for="rank">Rank: <small id="rank_reminder">confirm nutrients and select a category to obtain a rank.</small></label> 
+                    <select class="form-control form-control-sm" disabled name="rank" id="rank">
+                        <option value="--">--</option>
+                        <option value="rarely">Rarely</option>
+                        <option value="sometimes">Sometimes</option>
+                        <option value="often">Often</option>
+                        <option value="unranked">Unranked</option>
+                    </select>
+                    </div>
             </div>   
         </div>
         <div class="col-md-6">
@@ -90,11 +102,8 @@
 
 
             <div class="form-group">
-                <a href="javascript:void(0);" class="btn btn-sm btn-block btn-dark text-left" 
-                data-toggle="collapse" data-target="#nutrients">
-                <i class="bi bi-arrow-down-circle"></i>
-                Nutrient Info</a>
-                <div style="margin-top:10px" class="collapse" id="nutrients">
+
+                <div id="nutrients">
                     <div class="form-group"><label for="saturated_fat">Saturated Fat: </label><input class="form-control form-control-sm" name="saturated_fat" id="saturated_fat" type="text" placeholder="Not found."></div>
                     <div class="form-group"><label for="sodium">Sodium: </label> <input class="form-control form-control-sm" id="sodium" name="sodium" type="text" placeholder="Not found."></div>
                     <div class="form-group"><label for="sugars">Sugars: </label> <input class="form-control form-control-sm" id="sugars" name="sugars" type="text" placeholder="Not found."></div>
@@ -108,9 +117,7 @@
             </div>
 
             <div class = "form-group">
-            <a href="#" id="flag_item" class="btn btn-info btn-sm btn-inline"><i id="icon_flag" class="bi bi-flag"></i> Flag For Review</a>
-
-                <a href="#" id="inventory-add" class="btn btn-sm btn-inline btn-outline-info"><i class="bi bi-journal-plus"></i> Send to Inbox</a>
+                <a href="#" id="inventory-add" class="btn btn-sm btn-block btn-outline-info"><i class="bi bi-journal-plus"></i> Send to Inventory</a>
                 <div class="d-none alert" id="inventoryAlert"></div>
             </div>  
 
@@ -133,8 +140,8 @@
 <script src="food.js"></script>
 <script>
 
-let api_url = "https://v2.api.wellscan.io/api/";
-//let api_url = "http://localhost:8000/api/"
+//let api_url = "https://v2.api.wellscan.io/api/";
+let api_url = "http://localhost:8000/api/"
 
 let lookup_endpoint = "foods/lookup/";
 let calcRankNuts = "foods/rankFromNuts";
@@ -203,6 +210,11 @@ function calcRank() {
                 rank_select.classList.remove("often");
                 rank_select.classList.remove("unranked");
                 rank_select.classList.add(data.rank);
+                document.querySelector("#name").classList.remove("rarely");
+                document.querySelector("#name").classList.remove("often");
+                document.querySelector("#name").classList.remove("sometimes");
+                document.querySelector("#name").classList.remove("unranked");
+                document.querySelector("#name").classList.add(data.rank);
 
                 hideCatAlert();
             });
@@ -371,6 +383,7 @@ function getFood() {
 
                     rank_select.selectedIndex = rank.value;
                     rank_select.classList.add(rank.rank);
+                    document.querySelector("#name").classList.add(rank.rank);
                 }
                     
 
