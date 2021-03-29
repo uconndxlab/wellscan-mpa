@@ -1,7 +1,6 @@
 <template>
 
-  <v-container>
-    
+  <div>
     <v-list three-line>
       <template v-for="(item, index) in items">
         <v-list-item
@@ -110,7 +109,7 @@
               <v-chip
                 class="ma-2 rounded-0"
                 :input-value="activeFood.flagged"
-                @click="activeFood.flagged = !activeFood.flagged"
+                @click="flagFood"
                 style="position:absolute; right:0px; top:-25px; z-index:999"
                 color="secondary"
                 filter
@@ -120,6 +119,12 @@
                 Flag <span v-if="activeFood.flagged" style="margin-right:6px;">ged</span>for Review
               </v-chip>
 
+                <!-- <v-text-field
+                  
+                  dense
+                  label="Quantity"
+                  type="number"
+                ></v-text-field> -->
 
 
                 <v-chip-group
@@ -169,7 +174,7 @@
               </v-card-text>
             </v-card>
     </v-dialog>
-  </v-container>
+  </div>
   
 </template>
 
@@ -307,6 +312,10 @@ import { StreamBarcodeReader } from "vue-barcode-reader";
 
       flagFood() {
         this.activeFood.flagged = !this.activeFood.flagged;
+      },
+
+      onBarcodeDecode() {
+        
       }
     }
   }
@@ -324,6 +333,11 @@ import { StreamBarcodeReader } from "vue-barcode-reader";
   margin-top:10px;
 }
 
+
+.v-list-item__title, .v-list-item__subtitle {
+  white-space:unset;
+  max-height:4ch;
+}
 
 
 .v-toolbar--flat {

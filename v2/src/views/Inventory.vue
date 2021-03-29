@@ -53,7 +53,6 @@
                     <v-list-item-title>Flagged Items</v-list-item-title>
                 </v-list-item>
 
-
                 <v-list-item>
                     <v-list-item-title>Saved Snapshots</v-list-item-title>
                 </v-list-item>                    
@@ -78,12 +77,15 @@
     </template>
 
     <template v-slot:[`item.actions`]="{ item }">
-      <v-icon
-        small
-        @click="deleteItem(item)"
-      >
-        mdi-delete
-      </v-icon>
+      <v-btn small>
+        archive
+        <v-icon
+          small
+          @click="deleteItem(item)"
+        >
+          mdi-archive
+        </v-icon>
+      </v-btn>
     </template>
   
   </v-data-table>
