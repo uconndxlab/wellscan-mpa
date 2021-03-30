@@ -6,10 +6,8 @@
       v-model="drawer"
     >
       <template v-slot:prepend>
-        <v-list-item two-line>
-          <v-list-item-avatar>
-            <img src="https://randomuser.me/api/portraits/men/81.jpg">
-          </v-list-item-avatar>
+        <v-list-item two-line v-if="user.loggedIn">
+
 
           <v-list-item-content>
             <v-list-item-title>{{user.email}}</v-list-item-title>

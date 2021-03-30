@@ -257,11 +257,11 @@ import 'firebase/firestore';
         var db = firebase.firestore();
         //var that = this;
         var itemToDelete = this.items[index].id;
-        
+        var org = this.user.organization;
         
         console.log(`Deleting...`+ itemToDelete);
         db.collection("organizations")
-          .doc("uconn")
+          .doc(org)
           .collection("inventory")
           .doc(itemToDelete)
           .delete().then(()=> {
@@ -296,6 +296,9 @@ import 'firebase/firestore';
             response.json().then(function(data) {
                 if(typeof data.rankings.swap !== "undefined")
                   that.activeFood.category = data.rankings.swap.category;
+                
+                if(typeof data.rankings.swap !== "undefined")
+                  that.activeFood.rank = data.rankings.swap.rank
                 
                 that.activeFood.nutrition = data.nutrition;
                 that.activeFood.name = data.name;
