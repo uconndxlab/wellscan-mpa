@@ -13,7 +13,7 @@
         <v-icon>mdi-account</v-icon>
       </v-tab>
 
-      <v-tab href="#tab-register" v-if="1 == 0">
+      <v-tab href="#tab-register">
         Register
         <v-icon>mdi-account-outline</v-icon>
       </v-tab>
@@ -79,7 +79,7 @@
 
      <v-tab-item
         :value="'tab-register'"
-        v-if="1 == 0"
+        
       >
         <v-card light>
           <v-container>
@@ -146,7 +146,7 @@
                             @click:append="showRegPassword = !showRegPassword"
                             ></v-text-field>
                 </v-col>
-                <!-- <v-col cols="12">
+                <v-col cols="12">
 
                     <v-select
                     :items="orgs"
@@ -157,7 +157,7 @@
                     ></v-select>
                     
 
-                </v-col> -->
+                </v-col>
 
 
                 </v-row>
@@ -170,9 +170,6 @@
                 </v-row>
             </v-container>
             </v-form>
-
-
-
             <v-card-actions>
                 <v-btn v-if="!newUser.createdNewUser" @click="register()" block large color="primary">Register</v-btn>
             </v-card-actions>
@@ -189,10 +186,12 @@ import firebase from "firebase";
       return {
         showRegPassword: false,
         showLoginPassword:false,
+        associatedOrg:"",
         orgs: [
-            "PHA",
-            "UConn",
-            "CT Food Bank"
+            "pha",
+            "uconn",
+            "pittsburgh",
+            "maryland"
         ],
 
         regform: {
@@ -226,6 +225,7 @@ import firebase from "firebase";
 
     methods: {
       register() {
+        var that = this;
         firebase
           .auth()
           .createUserWithEmailAndPassword(this.regform.email, this.regform.password)
@@ -233,12 +233,12 @@ import firebase from "firebase";
             data.user
               .updateProfile({
                 displayName: this.regform.firstname + " " + this.regform.lastname,
-                associatedOrg:"UConn"
+                associatedOrg:that.associatedOrg
               })
               .then(() => {
 
                 this.handleNewUserCreation(data.user)
-
+            
               });
           })
           .catch(err => {
@@ -247,9 +247,31 @@ import firebase from "firebase";
       },
 
       handleNewUserCreation(usr) {
+        var that = this;
         this.newUser.createdNewUser = true;
         this.newUser.displayName = usr.displayName;
         this.newUser.email = usr.email;
+        
+        var db = firebase.firestore();
+        //var that = this;
+        
+        
+        
+        
+        db.collection("users")
+          .doc(usr.email)
+            .set({
+                name: usr.email,
+                usr_type: "user",
+                organization: that.associatedOrg
+            })
+            .then(() => {
+                console.log("Document successfully written!");
+            })
+            .catch((error) => {
+                console.error("Error writing document: ", error);
+            });
+
       },
 
       handleUserCreationError(err) {

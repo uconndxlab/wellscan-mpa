@@ -343,6 +343,7 @@ import 'firebase/firestore';
       },
 
       onCameraLoaded() {
+        this.upcToSearch = "";
         console.log("Loaded camera");
       },
 
@@ -476,28 +477,28 @@ import 'firebase/firestore';
         if (!user) {
           this.$router.replace({name:"Login"});
         } else {
-       var db = firebase.firestore();
-   
-       let org,usr_type;
-       
-       db.collection("users")
-       .doc(user.email).get().then(function(doc){
-          var usr = doc.data();
-         
-          org = usr.organization;
-          usr_type = usr.usr_type;
+          var db = firebase.firestore();
+      
+          let org,usr_type;
+          
+          db.collection("users")
+          .doc(user.email).get().then(function(doc){
+              var usr = doc.data();
+            
+              org = usr.organization;
+              usr_type = usr.usr_type;
 
-          that.user = {
-            displayName: user.displayName,
-            email: user.email,
-            organization:org,
-            loggedIn:true,
-            usr_type:usr_type
-          };
+              that.user = {
+                displayName: user.displayName,
+                email: user.email,
+                organization:org,
+                loggedIn:true,
+                usr_type:usr_type
+              };
 
-          that.getInventoryScannedByUser();
+              that.getInventoryScannedByUser();
 
-        });
+            });
         }
       });
       

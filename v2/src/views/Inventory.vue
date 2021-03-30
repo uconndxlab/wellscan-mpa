@@ -14,7 +14,7 @@
         dark
         color="primary"
     >
-        <v-toolbar-title>Inbox <small>uconn</small></v-toolbar-title>
+        <v-toolbar-title tile>Inbox <small>{{user.organization}}</small></v-toolbar-title>
         
         <v-spacer></v-spacer>
 
@@ -100,6 +100,13 @@ export default {
   name: 'Inventory',
   data () {
       return {
+        user: {
+            displayName: "",
+            email: "",
+            organization:"organization",
+            loggedIn:false,
+            usr_type:""
+        },
         headers: [
           {
             text: 'Name',
@@ -109,8 +116,8 @@ export default {
           },
           { text: 'UPC', value: 'upc' },
           { text: 'Rank', value: 'rank' },
-          { text: 'Date', value:'datestamp'},
-          { text: 'BlameID', value: 'blameID' },
+          { text: 'Date', value:'date_scanned'},
+          { text: 'BlameID', value: 'scanned_by' },
           { text: 'Actions', value:'actions', sortable: false},
         ],
         items: [
@@ -139,13 +146,74 @@ export default {
       }
     },
 
+    methods: {
+        getInventoryForOrg() {
+            let org = this.user.organization;
+            
+            let that = this;
+
+            var db = firebase.firestore();
+            
+            var listRef = db.collection("organizations")
+            .doc(org)
+            .collection("inventory")
+            .orderBy("date_scanned", "desc");
+            
+
+            listRef.onSnapshot(querySnapshot => {    
+                that.items = [];       
+                querySnapshot.forEach(function(doc) {                              
+                    var item = doc.data();
+
+                    item.date_scanned = item.date_scanned.toDate();
+                    item.id = doc.id;
+                    item.nutrition = {
+                    nf_sodium:0,
+                    nf_saturated_fat: 0,
+                    nf_sugars: 0
+                    };
+                    
+                    
+                    if(typeof item.flagged == "undefined") {
+                    item.flagged = false
+                    }
+                    
+                    
+                    that.items.push(item);
+
+                });
+            })
+        }
+    },
+
     mounted(){
         firebase.auth().onAuthStateChanged(user => {
-        
+        let that = this;
         if (!user) {
           this.$router.replace({name:"Login"});
         } else {
-          console.log("logged in...");
+          var db = firebase.firestore();
+      
+          let org,usr_type;
+          
+          db.collection("users")
+          .doc(user.email).get().then(function(doc){
+              var usr = doc.data();
+            
+              org = usr.organization;
+              usr_type = usr.usr_type;
+
+              that.user = {
+                displayName: user.displayName,
+                email: user.email,
+                organization:org,
+                loggedIn:true,
+                usr_type:usr_type
+              };
+
+              that.getInventoryForOrg();
+
+            });
           
         }
       });

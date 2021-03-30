@@ -25,6 +25,7 @@
           v-for="item in items"
           :key="item.title"
           :to="item.to"
+          :class="item.class"
         >
           <v-list-item-icon>
             <v-icon>{{ item.icon }}</v-icon>
@@ -36,7 +37,7 @@
         </v-list-item>
       </v-list>
       
-         <div class="pa-2">
+         <div v-if="user.loggedIn" class="pa-2">
           <v-btn @click="signOut" block>
             Log Out
           </v-btn>
@@ -92,9 +93,8 @@ export default {
      },
      drawer: null,
      items: [
-          { title: "Home", icon: 'mdi-home', to:"/"},
-          { title: 'Inventory', icon: 'mdi-view-dashboard', to:"/inventory" },
-          { title: 'My Profile', icon: 'mdi-account', to:"/profile" },
+          { title: "Home", icon: 'mdi-home', to:"/", class:""},
+          { title: 'Inventory', icon: 'mdi-view-dashboard', to:"/inventory", class:"d-none d-md-flex d-md-none" },
         ],
   }),
 
