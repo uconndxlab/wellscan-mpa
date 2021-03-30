@@ -12,8 +12,8 @@
           </v-list-item-avatar>
 
           <v-list-item-content>
-            <v-list-item-title>joel.salisbury@gmail.com</v-list-item-title>
-            <v-list-item-subtitle>uconn</v-list-item-subtitle>
+            <v-list-item-title>{{user.email}}</v-list-item-title>
+            <v-list-item-subtitle>{{user.organization}}</v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
       </template>
@@ -37,8 +37,8 @@
       </v-list>
       
          <div class="pa-2">
-          <v-btn block>
-            Logout
+          <v-btn @click="signOut" block>
+            Log Out
           </v-btn>
         </div>
 
@@ -73,7 +73,7 @@
 </template>
 
 <script>
-
+ import firebase from "firebase";
 
 export default {
   name: 'App',
@@ -83,6 +83,13 @@ export default {
   },
 
   data: () => ({
+     user: {
+          displayName: "",
+          email: "",
+          organization:"organization",
+          loggedIn:false,
+          usr_type:""
+     },
      drawer: null,
      items: [
           { title: "Home", icon: 'mdi-home', to:"/"},
@@ -90,5 +97,52 @@ export default {
           { title: 'My Profile', icon: 'mdi-account', to:"/profile" },
         ],
   }),
+
+  methods: {
+    signOut() {
+        firebase
+        .auth()
+        .signOut()
+        .then(() => {
+          this.$router.replace({
+            name: "Login"
+          });
+        });
+      }
+  },
+
+  mounted() {
+    // Initialize Firebase
+    var that = this;
+    firebase.auth().onAuthStateChanged(user => {
+      
+      if (!user) {
+        this.$router.replace({name:"Login"});
+      } else {
+        
+       var db = firebase.firestore();
+   
+       let org,usr_type;
+       
+       db.collection("users")
+       .doc(user.email).get().then(function(doc){
+          var usr = doc.data();
+         
+          org = usr.organization;
+          usr_type = usr.usr_type;
+
+          that.user = {
+            displayName: user.displayName,
+            email: user.email,
+            organization:org,
+            loggedIn:true,
+            usr_type:usr_type
+          };
+        });
+
+
+      }
+    });
+  }
 };
 </script>

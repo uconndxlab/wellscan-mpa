@@ -95,7 +95,7 @@
 <script>
 // @ is an alias to /src
 
-
+import firebase from "firebase/app";
 export default {
   name: 'Inventory',
   data () {
@@ -138,5 +138,17 @@ export default {
         ],
       }
     },
+
+    mounted(){
+        firebase.auth().onAuthStateChanged(user => {
+        
+        if (!user) {
+          this.$router.replace({name:"Login"});
+        } else {
+          console.log("logged in...");
+          
+        }
+      });
+    }
 }
 </script>

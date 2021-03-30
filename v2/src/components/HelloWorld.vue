@@ -4,12 +4,14 @@
     <v-list three-line>
       <template v-for="(item, index) in items">
         <v-list-item
-          :key="item.name"
-          @click="loadSingleFood(index)"
+          :key="index"
+          v-if="(item.status == 'active')"
         >
           <v-list-item-avatar :class="item.rank"></v-list-item-avatar>
 
-          <v-list-item-content>
+          <v-list-item-content
+              @click="loadSingleFood(index)"
+            >
             <v-list-item-title v-html="item.name"></v-list-item-title>
             <v-list-item-subtitle v-html="item.upc"></v-list-item-subtitle>
           </v-list-item-content>
@@ -20,11 +22,12 @@
                 </v-icon>
             </v-btn>
             </v-list-item-action>
+            
         </v-list-item>
-        <v-divider :key="index" inset></v-divider>
+        
       </template>
     </v-list>
-
+    <!-- <v-btn block>Load More</v-btn> -->
     <v-fab-transition>
       <v-btn
         color="primary"
@@ -53,10 +56,17 @@
           >      
           </StreamBarcodeReader>
           <v-text-field
-            class="ma-6"
-            outlined
-            label="UPC"
+            class="ma-6 centered-input"
+            v-model="upcToSearch"
           ></v-text-field> 
+          <v-btn
+            class="ma-6"
+            color="primary"
+            @click="addFoodToInventory"
+            
+          >
+            Search
+          </v-btn>
         </div>
 
           <v-btn
@@ -71,9 +81,8 @@
 
     <v-dialog fullscreen transition="dialog-bottom-transition" v-model="foodClicked">
           <v-card tile>
-
               <v-toolbar
-              :color="activeFood.rank"
+              color="secondary"
               flat
               fixed
               dark
@@ -89,13 +98,14 @@
                 <v-btn
                   color="white"
                   text
-                  @click="foodClicked = !foodClicked"
+                  @click="saveFood()"
                 >
-                  <v-icon>mdi-check</v-icon>
+                  save
                 </v-btn>
               </v-toolbar>
               <div
-                :class="activeFood.rank"
+                :color="activeFood.rank"
+                :class="['food-header', activeFood.rank]"
                 height="135px"
               >
                 
@@ -109,7 +119,7 @@
               <v-chip
                 class="ma-2 rounded-0"
                 :input-value="activeFood.flagged"
-                @click="flagFood"
+                @click="flagFood()"
                 style="position:absolute; right:0px; top:-25px; z-index:999"
                 color="secondary"
                 filter
@@ -136,7 +146,7 @@
                     v-for="tag in tags"
                     :key="tag.abbr"
                     :value="tag.abbr"
-                    
+                    @click="setCat(tag.abbr)"
                   >
                     {{ tag.name }}
                   </v-chip>
@@ -148,12 +158,14 @@
                   dense
                   label="Name"
                   outlined
+                  @change="onFoodUpdated"
                 ></v-text-field>        
                 <v-text-field
                   dense
                   v-model="activeFood.nutrition.nf_sodium"
                   label="Sodium"
                   outlined
+                  @change="onFoodUpdated"
                 ></v-text-field>
 
                 <v-text-field
@@ -161,17 +173,20 @@
                   dense
                   label="Sugars"
                   outlined
+                  @change="onFoodUpdated"
                 ></v-text-field>
 
                 <v-text-field
                   v-model="activeFood.nutrition.nf_saturated_fat"
                   dense
                   outlined
+                  @change="onFoodUpdated"
                   label="Saturated Fat"
                   
                 ></v-text-field>
                 </div>
               </v-card-text>
+              
             </v-card>
     </v-dialog>
   </div>
@@ -180,19 +195,30 @@
 
 <script>
 import { StreamBarcodeReader } from "vue-barcode-reader";
+import firebase from "firebase/app";
+import 'firebase/firestore';
   export default {
     name: 'HelloWorld',
     components: {
         StreamBarcodeReader,
       },
     data: () => ({
+    user: {
+          displayName: "",
+          email: "",
+          organization:"organization",
+          loggedIn:false,
+          usr_type:""
+     },
       openScanner:false,
       foodClicked:false,
+      upcToSearch:"",
       activeFood: {          
           name: 'Not Found',
           upc: "",
           rank:"",
           category:"",
+          flagged:"",
           nutrition: {
             nf_sodium:0,
             nf_saturated_fat:0,
@@ -212,111 +238,269 @@ import { StreamBarcodeReader } from "vue-barcode-reader";
         {name:'Dessert', abbr:'dessert'},
         {name:'Baking Supply/Condiment', abbr:'baking-supplies-condiments'}
       ],     
-     items: [
-        {
-          name: 'This is a very long food name and I wonder if it will break the UI or if it will be okay I guess we will see',
-          flagged:false,
-          upc: "042563016272",
-          rank:"rarely",
-          category:"fruit-vegetable",
-          nutrition: {
-            nf_sodium:0,
-            nf_saturated_fat:40,
-            nf_sugars:40
-          }
-        },
-        {
-          name: 'Runa Amazon Guayusa Tea, Unsweetned Guava',
-          flagged:false,
-          upc: "042563016272",
-          rank:"often",
-          category:"fruit-vegetable",
-          nutrition: {
-            nf_sodium:0,
-            nf_saturated_fat:40,
-            nf_sugars:40
-          }
-        },
-        {
-          name: 'Almost Breeze Almont Milk, Unsweetened Vanilla',
-          flagged:false,
-          upc: "042563016272",
-          rank:"unranked",
-          category:"non-dairy-alternative",
-          nutrition: {
-            nf_sodium:0,
-            nf_saturated_fat:40,
-            nf_sugars:40
-          }
-        },
-        {
-          name: 'Izze Sparkling Clementine',
-          flagged:false,
-          upc: "042563016272",
-          rank:"rarely",
-          category:"beverage",
-          nutrition: {
-            nf_sodium:0,
-            nf_saturated_fat:40,
-            nf_sugars:40
-          }
-        },
-        {
-          name: "Bell's Traditional Stuffing",
-          flagged:false,
-          upc: "042563016272",
-          rank:"sometimes",
-          category:"mixed-dish",
-          nutrition: {
-            nf_sodium:0,
-            nf_saturated_fat:40,
-            nf_sugars:40
-          }
-        },
-        {
-          name: 'Iberia Arroz Amarillo Yellow Rice',
-          flagged:false,
-          upc: "042563016272",
-          rank:"rarely",
-          category:"grain",
-          nutrition: {
-            nf_sodium:0,
-            nf_saturated_fat:40,
-            nf_sugars:40
-          }
-        },
-        {
-          name: 'Unknown',
-          flagged:false,
-          upc: "042563016272",
-          rank:"unranked",
-          category:"fruit-vegetable",
-          nutrition: {
-            nf_sodium:0,
-            nf_saturated_fat:0,
-            nf_sugars:0
-          }
-        },                     
-      ],
+     items: [],
     }),
+
+    // watch: {
+    //   activeFood: { 
+    //     handler() {
+    //       // food, you've changed
+    //       this.onFoodUpdated();
+    //     },
+    //     // but haven't we all
+    //     deep:true
+    //   }
+    // },
 
     methods: {
       removeItem(index) {
-        this.items.splice(index,1);
+        var db = firebase.firestore();
+        //var that = this;
+        var itemToDelete = this.items[index].id;
+        
+        
+        console.log(`Deleting...`+ itemToDelete);
+        db.collection("organizations")
+          .doc("uconn")
+          .collection("inventory")
+          .doc(itemToDelete)
+          .delete().then(()=> {
+            
+            console.log(`Deleted...`+ itemToDelete);
+          }).catch((error) => {
+            console.log("Error deleting..." + error);
+          });
+
+      },
+
+      setCat(cat){
+        this.activeFood.category = cat;
+        console.log(this.activeFood.category);
+        this.onFoodUpdated();
       },
  
       loadSingleFood(index) {
-        this.foodClicked = !this.foodClicked;
-        this.activeFood = this.items[index];
+
+        let that = this;
+        that.foodClicked = !that.foodClicked;
+        that.activeFood = that.items[index];
+        fetch("https://v2.api.wellscan.io/api/foods/lookup/"+this.activeFood.upc)
+        .then(
+           function(response) {
+            if (response.status !== 200) {
+                console.log('Looks like there was a problem. Status Code: ' +
+                response.status);
+                return;
+            } 
+            
+            response.json().then(function(data) {
+                if(typeof data.rankings.swap !== "undefined")
+                  that.activeFood.category = data.rankings.swap.category;
+                
+                that.activeFood.nutrition = data.nutrition;
+                that.activeFood.name = data.name;
+              })
+            }
+        )
       },
 
       flagFood() {
+        console.log("Flagging food...");
         this.activeFood.flagged = !this.activeFood.flagged;
+        this.onFoodUpdated();
       },
 
-      onBarcodeDecode() {
+      saveFood() {
+        this.foodClicked = !this.foodClicked;
+
+        // data to be sent to the POST request
+        let _data = {
+          upc:this.activeFood.upc,
+          name: this.activeFood.name,
+          nf_saturated_fat:this.activeFood.nutrition.nf_saturated_fat,
+          sugars:this.activeFood.nutrition.nf_sugars,
+          sodium:this.activeFood.nutrition.nf_sodium,
+          category:this.activeFood.category,
+          rank:this.activeFood.rank,
+          nutrition_source:"manual",
+          nutrition_method:"manual"
+        }
+
+        fetch('https://v2.api.wellscan.io/api/foods/'+this.activeFood.upc, {
+          method: "PUT",
+          body: JSON.stringify(_data),
+          headers: {"Content-type": "application/json; charset=UTF-8"}
+        })
+        .then(response => response.json()) 
+        .then(json => console.log(json))
+        .catch(err => console.log(err));
+  
+      },
+
+      onBarcodeDecode(results) {
+        this.upcToSearch = results;
+        this.addFoodToInventory();
+      },
+
+      onCameraLoaded() {
+        console.log("Loaded camera");
+      },
+
+      lookUpFood() {
+
+      },
+
+      addFoodToInventory() {
+          var db = firebase.firestore();
+          var that = this;
+          
+          db.collection("organizations")
+          .doc(that.user.organization)
+          .collection("inventory")
+          .add({
+              upc:that.upcToSearch,
+              status:"active",
+              name:"Unknown",
+              rank:"unranked",
+              scanned_by:that.user.email,
+              date_scanned:new Date(),
+            })
+          .then(function(docRef) {
+              that.loadSingleFood(0);
+              that.openScanner =  !that.openScanner;
+              console.log("Your item has been saved with ID " + docRef.id);
+          })
+          .catch(function(error) {
+              console.error("Error adding document: ", error);
+        });
+      },
+
+      getInventoryScannedByUser() {
+        let org = this.user.organization;
+        let user= this.user.email;
+        let that = this;
+
+        var db = firebase.firestore();
         
+        var listRef = db.collection("organizations")
+        .doc(org)
+        .collection("inventory")
+        .orderBy("date_scanned", "desc")
+        .limit(40);
+        
+
+        listRef.onSnapshot(querySnapshot => {    
+            that.items = [];       
+            querySnapshot.forEach(function(doc) {
+                 
+                
+                var item = doc.data();
+
+                item.date_scanned = item.date_scanned.toDate();
+                item.id = doc.id;
+                item.nutrition = {
+                  nf_sodium:0,
+                  nf_saturated_fat: 0,
+                  nf_sugars: 0
+                };
+                
+                
+                if(typeof item.flagged == "undefined") {
+                  item.flagged = false
+                }
+                
+                if(item.scanned_by == user)
+                  that.items.push(item);
+
+            });
+        })
+      },
+
+      calculateRankOfActiveFood() {
+          var db = firebase.firestore();
+          let that = this;
+          
+            console.log("Ready to calculate rank..."); 
+            console.log(`Ranking for ${this.activeFood.category}`);
+            fetch("https://v2.api.wellscan.io/api/foods/rankFromNuts/" + this.activeFood.category + "/" + this.activeFood.nutrition.nf_saturated_fat + "/" + this.activeFood.nutrition.nf_sodium + "/" + 0 + "/" + this.activeFood.nutrition.nf_sugars)
+            .then(
+              function(response) {
+                if (response.status !== 200) {
+                    console.log('Looks like there was a problem. Status Code: ' +
+                    response.status);
+                    return;
+                }
+
+                // Examine the text in the response
+                response.json().then(function(data) {
+                  that.activeFood.rank = data.rank;
+                  db.collection("organizations")
+                    .doc(that.user.organization)
+                    .collection("inventory")
+                    .doc(that.activeFood.id)
+                    .set({
+                      name:that.activeFood.name,
+                      rank: data.rank,
+                      category:that.activeFood.category,
+                      status:that.activeFood.status,
+                      flagged:that.activeFood.flagged
+                    }, 
+                    {merge:true});
+
+
+
+                });
+              });
+          
+
+      },
+
+      onFoodUpdated() {
+   
+        this.calculateRankOfActiveFood();
+
       }
+    },
+
+  computed : {
+    
+
+
+
+  },
+
+    mounted() {
+      var that = this;
+      firebase.auth().onAuthStateChanged(user => {
+        
+        if (!user) {
+          this.$router.replace({name:"Login"});
+        } else {
+       var db = firebase.firestore();
+   
+       let org,usr_type;
+       
+       db.collection("users")
+       .doc(user.email).get().then(function(doc){
+          var usr = doc.data();
+         
+          org = usr.organization;
+          usr_type = usr.usr_type;
+
+          that.user = {
+            displayName: user.displayName,
+            email: user.email,
+            organization:org,
+            loggedIn:true,
+            usr_type:usr_type
+          };
+
+          that.getInventoryScannedByUser();
+
+        });
+        }
+      });
+      
     }
   }
 </script>
@@ -329,18 +513,20 @@ import { StreamBarcodeReader } from "vue-barcode-reader";
   overflow:hidden;
 }
 
+.v-toolbar--flat {
+  transition: .4s;
+}
+
 .v-card__title + .v-card__subtitle {
   margin-top:10px;
 }
-
 
 .v-list-item__title, .v-list-item__subtitle {
   white-space:unset;
   max-height:4ch;
 }
 
-
-.v-toolbar--flat {
+.v-toolbar--flat, .food-header {
   box-shadow: none!important;
 }
 
@@ -385,6 +571,7 @@ import { StreamBarcodeReader } from "vue-barcode-reader";
   border-radius:3px;
 }
 
-
-
+.centered-input >>> input {
+  text-align: center
+}
 </style>
