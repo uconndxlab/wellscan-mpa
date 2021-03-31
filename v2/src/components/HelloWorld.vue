@@ -49,34 +49,28 @@
       >
 
         <div>
-
-          <StreamBarcodeReader v-if="openScanner"
-          @decode="onBarcodeDecode"
-          @loaded="onCameraLoaded"
-          style="margin-bottom:25px"
-          >      
-          </StreamBarcodeReader>
-          <v-text-field
-            class="ma-6 centered-input"
-            v-model="upcToSearch"
-          ></v-text-field> 
           <v-btn
-            class="ma-6"
-            color="primary"
-            @click="addFoodToInventory"
-            
-          >
-            Search
-          </v-btn>
-        </div>
-
-          <v-btn
-            class="mb-6"
-            text
+            block
             @click="openScanner = !openScanner"
           >
             close
           </v-btn>
+          <StreamBarcodeReader v-if="openScanner"
+          @decode="onBarcodeDecode"
+          @loaded="onCameraLoaded"
+          
+          >      
+          </StreamBarcodeReader>
+          <v-text-field
+            class="mx-6 centered-input"
+            v-model="upcToSearch"
+            append-outer-icon="mdi-magnify"
+            @click:append-outer="addFoodToInventory"
+          ></v-text-field> 
+
+        </div>
+
+
       </v-sheet>
     </v-bottom-sheet>
 
@@ -107,16 +101,22 @@
               <div
                 :color="activeFood.rank"
                 :class="['food-header', activeFood.rank]"
-                height="135px"
+                height="125px"
               >
                 
-                <v-card-subtitle class="text-left pb-0">{{activeFood.rank}}</v-card-subtitle>
-                <v-card-title v-model="activeFood.name" class="text-left pt-0">{{activeFood.name}}</v-card-title>
+                <v-card-subtitle  class="text-left pb-0">{{activeFood.rank}}</v-card-subtitle>
+                <v-btn icon style="position:absolute; right:20px; top:70px;" class="text-right pb-0 mb-0 mt-0">
+                  <v-icon v-if="activeFood.flagged" color="white">mdi-flag</v-icon>
+                </v-btn>
+                <v-card-title  v-model="activeFood.name" class="text-left pt-0">{{activeFood.name}}</v-card-title>
                 <v-card-subtitle class="text-left">{{activeFood.upc}}</v-card-subtitle>
 
               </div>
               <v-card-text style="position:relative; padding-top:20px;" class="text-left">
-
+              <v-subheader class="pa-0">
+                <v-btn icon class="text-right pb-0 mb-0 mt-0"><v-icon color="primary">mdi-information-outline</v-icon></v-btn>
+                Category*
+              </v-subheader>
               <v-chip
                 class="ma-2 rounded-0"
                 :input-value="activeFood.flagged"
@@ -160,15 +160,21 @@
                   label="Name"
                   outlined
                   @change="onFoodUpdated"
-                ></v-text-field>        
-                <v-text-field
-                  dense
-                  v-model="activeFood.nutrition.nf_sodium"
-                  label="Sodium"
-                  outlined
-                  @change="onFoodUpdated"
                 ></v-text-field>
+                <v-row>
+                <v-col
+                  cols="4">       
+                  <v-text-field
+                    dense
+                    v-model="activeFood.nutrition.nf_sodium"
+                    label="Sodium"
+                    outlined
+                    @change="onFoodUpdated"
+                  ></v-text-field>
+                </v-col>
 
+                <v-col
+                  cols="4">   
                 <v-text-field
                   v-model="activeFood.nutrition.nf_sugars"
                   dense
@@ -176,26 +182,19 @@
                   outlined
                   @change="onFoodUpdated"
                 ></v-text-field>
+                </v-col>
 
+                <v-col
+                  cols="4">   
                 <v-text-field
                   v-model="activeFood.nutrition.nf_saturated_fat"
                   dense
                   outlined
                   @change="onFoodUpdated"
-                  label="Saturated Fat"
-                  
+                  label="Sat. Fat"
                 ></v-text-field>
-  <v-alert
-     
-      dense
-      text
-      type="info"
-     
-      v-if="!activeFood.category"
-    >
-    To obtain a ranking, ensure all nutrient values are set and select a category above.  
-    </v-alert>
-
+                </v-col>
+                </v-row>
                 </div>
               </v-card-text>
               
@@ -357,6 +356,8 @@ import 'firebase/firestore';
 
       onBarcodeDecode(results) {
         this.upcToSearch = results;
+        navigator.vibrate(200);
+        window.navigator.vibrate(200);
         this.addFoodToInventory();
       },
 
@@ -404,6 +405,7 @@ import 'firebase/firestore';
         var listRef = db.collection("organizations")
         .doc(org)
         .collection("inventory")
+        // .where("scanned_by", "==", user)
         .orderBy("date_scanned", "desc")
         .limit(40);
         
