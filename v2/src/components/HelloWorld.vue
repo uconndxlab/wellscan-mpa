@@ -24,9 +24,10 @@
             </v-list-item-action>
             
         </v-list-item>
-        
+       
       </template>
     </v-list>
+  
     <!-- <v-btn block>Load More</v-btn> -->
     <v-fab-transition>
       <v-btn
@@ -184,6 +185,17 @@
                   label="Saturated Fat"
                   
                 ></v-text-field>
+  <v-alert
+     
+      dense
+      text
+      type="info"
+     
+      v-if="!activeFood.category"
+    >
+    To obtain a ranking, ensure all nutrient values are set and select a category above.  
+    </v-alert>
+
                 </div>
               </v-card-text>
               
@@ -276,7 +288,7 @@ import 'firebase/firestore';
       setCat(cat){
         this.activeFood.category = cat;
         console.log(this.activeFood.category);
-        this.onFoodUpdated();
+        this.calculateRankOfActiveFood();
       },
  
       loadSingleFood(index) {
@@ -294,6 +306,7 @@ import 'firebase/firestore';
             } 
             
             response.json().then(function(data) {
+                console.log(data);
                 if(typeof data.rankings.swap !== "undefined")
                   that.activeFood.category = data.rankings.swap.category;
                 
@@ -302,6 +315,8 @@ import 'firebase/firestore';
                 
                 that.activeFood.nutrition = data.nutrition;
                 that.activeFood.name = data.name;
+
+                that.onFoodUpdated();
               })
             }
         )
@@ -421,7 +436,6 @@ import 'firebase/firestore';
       },
 
       calculateRankOfActiveFood() {
-          var db = firebase.firestore();
           let that = this;
           
             console.log("Ready to calculate rank..."); 
@@ -438,20 +452,9 @@ import 'firebase/firestore';
                 // Examine the text in the response
                 response.json().then(function(data) {
                   that.activeFood.rank = data.rank;
-                  db.collection("organizations")
-                    .doc(that.user.organization)
-                    .collection("inventory")
-                    .doc(that.activeFood.id)
-                    .set({
-                      name:that.activeFood.name,
-                      rank: data.rank,
-                      category:that.activeFood.category,
-                      status:that.activeFood.status,
-                      flagged:that.activeFood.flagged
-                    }, 
-                    {merge:true});
-
-
+                  
+                  that.onFoodUpdated();
+                 
 
                 });
               });
@@ -460,9 +463,22 @@ import 'firebase/firestore';
       },
 
       onFoodUpdated() {
-   
-        this.calculateRankOfActiveFood();
+        let that = this;
 
+        var db = firebase.firestore();
+
+        db.collection("organizations")
+        .doc(that.user.organization)
+        .collection("inventory")
+        .doc(that.activeFood.id)
+        .set({
+          name:that.activeFood.name,
+          category:that.activeFood.rank,
+          status:that.activeFood.status,
+          flagged:that.activeFood.flagged,
+          rank:that.activeFood.rank
+        }, 
+        {merge:true})
       }
     },
 
