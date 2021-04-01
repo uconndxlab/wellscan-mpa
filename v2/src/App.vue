@@ -44,6 +44,7 @@
     </v-navigation-drawer>
     <v-app-bar
       app
+      
       color="secondary"
       dark
     >
@@ -54,9 +55,59 @@
 
       <v-spacer></v-spacer>
 
-  
+      <v-btn
+      color="white"
+      icon
+      @click="loadFeedbackForm"
+        >
+        <v-icon>mdi-message-reply-text</v-icon>
+         
+      </v-btn>
     </v-app-bar>
-
+<v-dialog  v-model="openFeedback">
+  <v-card tile>
+      <v-toolbar
+      color="secondary"
+      flat
+      fixed
+      dark
+      >
+        <v-btn
+          color="white"
+          text
+          @click="openFeedback = !openFeedback"
+        >
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+        <v-spacer></v-spacer>
+        Feedback
+        <v-spacer></v-spacer>
+        <v-btn
+          color="white"
+          text
+          @click="openFeedback = !openFeedback"
+        >
+          submit
+        </v-btn>
+      </v-toolbar>
+      <v-card-text>
+         <v-container fluid>
+          <v-row>
+            <v-col
+              cols="12"
+              md="6"
+            >
+              <v-textarea
+                label="Your message..."
+                placeholder="Type your feedback here..."
+                hint="Your name and organization will be automatically included."
+              ></v-textarea>
+            </v-col>
+          </v-row>
+         </v-container>
+      </v-card-text>
+  </v-card>
+</v-dialog  >
   <!-- Sizes your content based upon application components -->
   <v-content>
     
@@ -65,7 +116,7 @@
 
       <!-- If using vue-router -->
       <router-view></router-view>
-
+    
     </v-container>
   </v-content>
   </v-app>
@@ -89,10 +140,12 @@ export default {
           loggedIn:false,
           usr_type:""
      },
+     openFeedback:false,
      drawer: null,
      items: [
-          { title: "Home", icon: 'mdi-home', to:"/", class:""},
+          { title: "Scan", icon: 'mdi-barcode', to:"/", class:""},
           { title: 'Inventory', icon: 'mdi-view-dashboard', to:"/inventory", class:"d-none d-md-flex d-md-none" },
+          { title: 'About WellSCAN', icon: 'mdi-information', to:"/about", class:"" },
         ],
   }),
 
@@ -106,7 +159,12 @@ export default {
             name: "Login"
           });
         });
-      }
+      },
+
+    loadFeedbackForm() {
+      console.log("wtf");
+      this.openFeedback = !this.openFeedback;
+    }
   },
 
   mounted() {

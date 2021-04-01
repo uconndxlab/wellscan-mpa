@@ -42,20 +42,20 @@
 
             <v-list>
                 <v-list-item>
-                    <v-list-item-title>Inbox</v-list-item-title>
+                    <v-list-item-title @click="getInventoryForOrg();" style="cursor:pointer">Active</v-list-item-title>
                 </v-list-item>
 
                 <v-list-item>
-                    <v-list-item-title>Archived Items</v-list-item-title>
+                    <v-list-item-title @click="getArchivedItems()" style="cursor:pointer">Archived</v-list-item-title>
                 </v-list-item>
 
                 <v-list-item>
-                    <v-list-item-title>Flagged Items</v-list-item-title>
+                    <v-list-item-title @click="getFlaggedItems();" style="cursor:pointer">Flagged</v-list-item-title>
                 </v-list-item>
 
-                <v-list-item>
-                    <v-list-item-title>Saved Snapshots</v-list-item-title>
-                </v-list-item>                    
+                <!-- <v-list-item>
+                    <v-list-item-title style="cursor:pointer">Saved Snapshots</v-list-item-title>
+                </v-list-item>                     -->
             </v-list>
         </v-menu>
 
@@ -121,27 +121,7 @@ export default {
           { text: 'Actions', value:'actions', sortable: false},
         ],
         items: [
-          {
-            name: 'Frozen Yogurt',
-            upc: "159",
-            rank: "rarely",
-            blameID:"joel.salisbury@gmail.com",
-            datestamp:Date() 
-          },
-          {
-            name: 'Ice cream sandwich',
-            upc: "237",
-            rank: "often",
-            blameID:"joel.salisbury@gmail.com",
-            datestamp:Date()
-          },
-          {
-            name: 'Eclair',
-            upc: "262",
-            rank: "sometimes",
-            blameID:"joel.salisbury@gmail.com",
-            datestamp:Date()
-          },
+
         ],
       }
     },
@@ -168,18 +148,94 @@ export default {
                     item.date_scanned = item.date_scanned.toDate();
                     item.id = doc.id;
                     item.nutrition = {
-                    nf_sodium:0,
-                    nf_saturated_fat: 0,
-                    nf_sugars: 0
+                        nf_sodium:0,
+                        nf_saturated_fat: 0,
+                        nf_sugars: 0
                     };
                     
                     
                     if(typeof item.flagged == "undefined") {
-                    item.flagged = false
+                        item.flagged = false
                     }
                     
+                    if(item.status == "active")
+                        that.items.push(item);
+
+                });
+            })
+        },
+
+        getArchivedItems() {
+            let org = this.user.organization;
+            
+            let that = this;
+
+            var db = firebase.firestore();
+            
+            var listRef = db.collection("organizations")
+            .doc(org)
+            .collection("inventory")
+            .orderBy("date_scanned", "desc");
+            
+
+            listRef.onSnapshot(querySnapshot => {    
+                that.items = [];       
+                querySnapshot.forEach(function(doc) {                              
+                    var item = doc.data();
+
+                    item.date_scanned = item.date_scanned.toDate();
+                    item.id = doc.id;
+                    item.nutrition = {
+                        nf_sodium:0,
+                        nf_saturated_fat: 0,
+                        nf_sugars: 0
+                    };
                     
-                    that.items.push(item);
+                    
+                    if(typeof item.flagged == "undefined") {
+                        item.flagged = false
+                    }
+                    
+                    if(item.status == "archived")
+                        that.items.push(item);
+
+                });
+            })
+        },
+
+        getFlaggedItems() {
+            let org = this.user.organization;
+            
+            let that = this;
+
+            var db = firebase.firestore();
+            
+            var listRef = db.collection("organizations")
+            .doc(org)
+            .collection("inventory")
+            .orderBy("date_scanned", "desc");
+            
+
+            listRef.onSnapshot(querySnapshot => {    
+                that.items = [];       
+                querySnapshot.forEach(function(doc) {                              
+                    var item = doc.data();
+
+                    item.date_scanned = item.date_scanned.toDate();
+                    item.id = doc.id;
+                    item.nutrition = {
+                        nf_sodium:0,
+                        nf_saturated_fat: 0,
+                        nf_sugars: 0
+                    };
+                    
+                    
+                    if(typeof item.flagged == "undefined") {
+                        item.flagged = false
+                    }
+                    
+                    if(item.status == "active" && item.flagged == true)
+                        that.items.push(item);
 
                 });
             })
@@ -220,3 +276,9 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+    tr:first-child td {
+        background-color:rgb(250, 242, 138)!important;
+    }
+</style>

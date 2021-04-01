@@ -1,4 +1,6 @@
 <template>
+<div>
+    <img style="max-width:100%;text-align:center;" src="@/assets/logo.png">
   <v-card>
     <v-tabs
       v-model="tab"
@@ -95,7 +97,7 @@
             <v-container>
                 <v-row>
                     <v-col
-                    cols="12"
+                    cols="6"
                     md="6"
                     >
                         <v-text-field
@@ -108,7 +110,7 @@
                     </v-col>
 
                     <v-col
-                    cols="12"
+                    cols="6"
                     md="6"
                     >
                         <v-text-field
@@ -142,6 +144,7 @@
                             :type="showRegPassword ? 'text' : 'password'"
                             name="reg-password"
                             label="Password"
+                            
                             counter
                             @click:append="showRegPassword = !showRegPassword"
                             ></v-text-field>
@@ -177,6 +180,7 @@
       </v-tab-item>
     </v-tabs-items>
   </v-card>
+</div>
 </template>
 
 <script>

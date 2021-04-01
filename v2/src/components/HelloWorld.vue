@@ -169,6 +169,7 @@
                     v-model="activeFood.nutrition.nf_sodium"
                     label="Sodium"
                     outlined
+                    :error = "activeFood.nutrition.nf_sodium == null"
                     @change="onFoodUpdated"
                   ></v-text-field>
                 </v-col>
@@ -177,6 +178,7 @@
                   cols="4">   
                 <v-text-field
                   v-model="activeFood.nutrition.nf_sugars"
+                  :error = "activeFood.nutrition.nf_sugars == null"
                   dense
                   label="Sugars"
                   outlined
@@ -188,6 +190,7 @@
                   cols="4">   
                 <v-text-field
                   v-model="activeFood.nutrition.nf_saturated_fat"
+                  :error = "activeFood.nutrition.nf_saturated_fat == null"
                   dense
                   outlined
                   @change="onFoodUpdated"
