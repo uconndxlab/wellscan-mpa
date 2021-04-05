@@ -359,8 +359,8 @@ import 'firebase/firestore';
 
       onBarcodeDecode(results) {
         this.upcToSearch = results;
-        navigator.vibrate(200);
-        window.navigator.vibrate(200);
+        // navigator.vibrate(200);
+        // window.navigator.vibrate(200);
         this.addFoodToInventory();
       },
 
