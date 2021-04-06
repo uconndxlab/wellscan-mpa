@@ -195,10 +195,10 @@
                 </v-col>
                 </v-row>
                 </div>
-              <v-subheader class="pa-0" :class="categoryCheck">
-                <v-btn icon class="text-right pb-0 mb-0 mt-0"><v-icon color="primary">mdi-information-outline</v-icon></v-btn>
-                Category* 
-              </v-subheader>
+              <fieldset :class="categoryCheck">
+                <legend>
+                Category*</legend>
+
                 <v-chip-group
                   active-class="primary--text"
                   v-model="activeFood.category"
@@ -213,7 +213,7 @@
                     {{ tag.name }}
                   </v-chip>
                 </v-chip-group>   
-
+              </fieldset>
               </v-card-text>
               
             </v-card>
@@ -634,8 +634,23 @@ import 'firebase/firestore';
   text-align: center
 }
 
+fieldset {
+  padding:5px;
+  border:1px solid rgba(0,0,0,0.38);
+  border-radius:4px;
+}
+
+fieldset legend {
+  padding:5px;
+  font-size:11px;
+}
+
 .error-outline {
   color:#b71c1c!important;
+}
+
+fieldset.error-outline {
+  border:1px solid #b71c1c;
 }
 
 </style>
