@@ -511,7 +511,7 @@ import 'firebase/firestore';
       },
 
       hasNutrientError(nutrient) {
-        return typeof this.activeFood.nutrition[nutrient] != "number";
+        return this.activeFood.nutrition[nutrient].length == 0;
       }
     },
 
