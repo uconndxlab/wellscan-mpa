@@ -113,10 +113,7 @@
 
               </div>
               <v-card-text style="position:relative; padding-top:20px;" class="text-left">
-              <v-subheader class="pa-0">
-                <v-btn icon class="text-right pb-0 mb-0 mt-0"><v-icon color="primary">mdi-information-outline</v-icon></v-btn>
-                Category*
-              </v-subheader>
+
               <v-chip
                 class="ma-2 rounded-0"
                 :input-value="activeFood.flagged"
@@ -136,22 +133,7 @@
                   label="Quantity"
                   type="number"
                 ></v-text-field> -->
-
-
-                <v-chip-group
-                  active-class="primary--text"
-                  v-model="activeFood.category"
-                  column
-                >
-                  <v-chip
-                    v-for="tag in tags"
-                    :key="tag.abbr"
-                    :value="tag.abbr"
-                    @click="setCat(tag.abbr)"
-                  >
-                    {{ tag.name }}
-                  </v-chip>
-                </v-chip-group>        
+    
               <div style="margin-top:20px">
                 <v-text-field
                   
@@ -165,24 +147,26 @@
                 <v-col
                   cols="4">       
                   <v-text-field
+                  type="number"
                     dense
                     v-model="activeFood.nutrition.nf_sodium"
-                    label="Sodium"
+                    label="Sodium*"
                     outlined
                     :error = "activeFood.nutrition.nf_sodium == null"
-                    @change="onFoodUpdated"
+                    @change="calculateRankOfActiveFood"
                   ></v-text-field>
                 </v-col>
 
                 <v-col
                   cols="4">   
                 <v-text-field
+                  type="number"
                   v-model="activeFood.nutrition.nf_sugars"
                   :error = "activeFood.nutrition.nf_sugars == null"
                   dense
-                  label="Sugars"
+                  label="Sugars*"
                   outlined
-                  @change="onFoodUpdated"
+                  @change="calculateRankOfActiveFood"
                 ></v-text-field>
                 </v-col>
 
@@ -190,15 +174,35 @@
                   cols="4">   
                 <v-text-field
                   v-model="activeFood.nutrition.nf_saturated_fat"
+                  type="number"
                   :error = "activeFood.nutrition.nf_saturated_fat == null"
                   dense
                   outlined
-                  @change="onFoodUpdated"
-                  label="Sat. Fat"
+                  @change="calculateRankOfActiveFood"
+                  label="Sat. Fat*"
                 ></v-text-field>
                 </v-col>
                 </v-row>
                 </div>
+              <v-subheader class="pa-0">
+                <v-btn icon class="text-right pb-0 mb-0 mt-0"><v-icon color="primary">mdi-information-outline</v-icon></v-btn>
+                Category*
+              </v-subheader>
+                <v-chip-group
+                  active-class="primary--text"
+                  v-model="activeFood.category"
+                  column
+                >
+                  <v-chip
+                    v-for="tag in tags"
+                    :key="tag.abbr"
+                    :value="tag.abbr"
+                    @click="setCat(tag.abbr)"
+                  >
+                    {{ tag.name }}
+                  </v-chip>
+                </v-chip-group>   
+
               </v-card-text>
               
             </v-card>
@@ -298,7 +302,9 @@ import 'firebase/firestore';
         let that = this;
         that.foodClicked = !that.foodClicked;
         that.activeFood = that.items[index];
-        fetch("https://v2.api.wellscan.io/api/foods/lookup/"+this.activeFood.upc)
+        var api_prefix = "https://v2.api.wellscan.io/api/";
+         //api_prefix = "http://localhost:8000/api/"
+        fetch(api_prefix + "foods/lookup/"+this.activeFood.upc)
         .then(
            function(response) {
             if (response.status !== 200) {
@@ -331,7 +337,10 @@ import 'firebase/firestore';
       },
 
       saveFood() {
+        console.log("saveFood()...");
         this.foodClicked = !this.foodClicked;
+        var api_prefix = "https://v2.api.wellscan.io/api/";
+         //api_prefix = "http://localhost:8000/api/"
 
         // data to be sent to the POST request
         let _data = {
@@ -346,7 +355,9 @@ import 'firebase/firestore';
           nutrition_method:"manual"
         }
 
-        fetch('https://v2.api.wellscan.io/api/foods/'+this.activeFood.upc, {
+        console.log(_data);
+
+        fetch(api_prefix + 'foods/'+this.activeFood.upc, {
           method: "PUT",
           body: JSON.stringify(_data),
           headers: {"Content-type": "application/json; charset=UTF-8"}
@@ -442,10 +453,12 @@ import 'firebase/firestore';
 
       calculateRankOfActiveFood() {
           let that = this;
-          
-            console.log("Ready to calculate rank..."); 
+          var api_prefix = "https://v2.api.wellscan.io/api/";
+            //api_prefix = "http://localhost:8000/api/"
+            console.log("CalculateRankOfActiveFood(): Ready to calculate rank..."); 
             console.log(`Ranking for ${this.activeFood.category}`);
-            fetch("https://v2.api.wellscan.io/api/foods/rankFromNuts/" + this.activeFood.category + "/" + this.activeFood.nutrition.nf_saturated_fat + "/" + this.activeFood.nutrition.nf_sodium + "/" + 0 + "/" + this.activeFood.nutrition.nf_sugars)
+            console.log(api_prefix+"foods/rankFromNuts/" + this.activeFood.category + "/" + this.activeFood.nutrition.nf_saturated_fat + "/" + this.activeFood.nutrition.nf_sodium + "/" + 0 + "/" + this.activeFood.nutrition.nf_sugars)
+            fetch(api_prefix+"foods/rankFromNuts/" + this.activeFood.category + "/" + this.activeFood.nutrition.nf_saturated_fat + "/" + this.activeFood.nutrition.nf_sodium + "/" + 0 + "/" + this.activeFood.nutrition.nf_sugars)
             .then(
               function(response) {
                 if (response.status !== 200) {
