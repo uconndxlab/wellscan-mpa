@@ -6,8 +6,9 @@ module.exports = {
   pwa: {
     name: 'WellSCAN App',
     themeColor: '#d56a3a',
-    
-
+    workboxOptions: {
+      skipWaiting: true
+    }
   },
 
   chainWebpack: config => {
