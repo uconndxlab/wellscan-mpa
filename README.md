@@ -1,6 +1,9 @@
 # App.WellSCAN.io
 Exploring PWA as MPA, possibly frameworkless other than Firestore and some barcodey stuff. Added Boostrap for preliminary UI but suggest changing.
 
+## Update 31 Mar 2021
+As of 31 Mar 2021 we've abandoned the MPA (multi-page app) and frameworkless approach.
+
 https://app.wellscan.io
 
 ## Release Log
