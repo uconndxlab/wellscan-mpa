@@ -162,7 +162,7 @@
                     v-model="activeFood.nutrition.nf_sodium"
                     label="Sodium*"
                     outlined
-                    :error = "activeFood.nutrition.nf_sodium == null"
+                    :error = "hasNutrientError('nf_sodium')"
                     @change="calculateRankOfActiveFood"
                   ></v-text-field>
                 </v-col>
@@ -172,7 +172,8 @@
                 <v-text-field
                   type="number"
                   v-model="activeFood.nutrition.nf_sugars"
-                  :error = "activeFood.nutrition.nf_sugars == null"
+                  :error = "hasNutrientError('nf_sugars')"
+                  
                   dense
                   label="Sugars*"
                   outlined
@@ -185,7 +186,7 @@
                 <v-text-field
                   v-model="activeFood.nutrition.nf_saturated_fat"
                   type="number"
-                  :error = "activeFood.nutrition.nf_saturated_fat == null"
+                  :error = "hasNutrientError('nf_saturated_fat')"
                   dense
                   outlined
                   @change="calculateRankOfActiveFood"
@@ -194,9 +195,9 @@
                 </v-col>
                 </v-row>
                 </div>
-              <v-subheader class="pa-0">
+              <v-subheader class="pa-0" :class="categoryCheck">
                 <v-btn icon class="text-right pb-0 mb-0 mt-0"><v-icon color="primary">mdi-information-outline</v-icon></v-btn>
-                Category*
+                Category* 
               </v-subheader>
                 <v-chip-group
                   active-class="primary--text"
@@ -248,9 +249,9 @@ import 'firebase/firestore';
           category:"",
           flagged:"",
           nutrition: {
-            nf_sodium:0,
-            nf_saturated_fat:0,
-            nf_sugars:0
+            nf_sodium:"",
+            nf_saturated_fat:"",
+            nf_sugars:""
           }},
      tags: [
         {name:'Fruit/Vegetable', abbr:"fruit-vegetable" },
@@ -444,9 +445,9 @@ import 'firebase/firestore';
                 item.date_scanned = item.date_scanned.toDate();
                 item.id = doc.id;
                 item.nutrition = {
-                  nf_sodium:0,
-                  nf_saturated_fat: 0,
-                  nf_sugars: 0
+                  nf_sodium:"",
+                  nf_saturated_fat: "",
+                  nf_sugars: ""
                 };
                 
                 
@@ -507,13 +508,23 @@ import 'firebase/firestore';
           rank:that.activeFood.rank
         }, 
         {merge:true})
+      },
+
+      hasNutrientError(nutrient) {
+        return typeof this.activeFood.nutrition[nutrient] != "number";
       }
     },
 
+
   computed : {
-    
-
-
+    categoryCheck() {
+      if(this.activeFood.category == null) {
+        return "error-outline"
+      } else {
+        return "";
+      }
+    }
+ 
 
   },
 
@@ -622,4 +633,9 @@ import 'firebase/firestore';
 .centered-input >>> input {
   text-align: center
 }
+
+.error-outline {
+  color:#b71c1c!important;
+}
+
 </style>
