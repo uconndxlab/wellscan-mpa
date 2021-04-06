@@ -271,6 +271,7 @@ import firebase from "firebase";
             })
             .then(() => {
                 console.log("Document successfully written!");
+                this.$router.replace({ name: "Recently Scanned" });
             })
             .catch((error) => {
                 console.error("Error writing document: ", error);

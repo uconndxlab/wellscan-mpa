@@ -1,6 +1,16 @@
 <template>
 
   <div>
+    <div v-if="!items.length">
+    <v-alert
+      icon="mdi-barcode"
+      prominent
+      text
+      type="info"
+    >
+      <strong>No recent foods.</strong> <p>When you scan foods, they'll show up in a list on this screen.</p>
+    </v-alert>
+    </div>
     <v-list three-line>
       <template v-for="(item, index) in items">
         <v-list-item
