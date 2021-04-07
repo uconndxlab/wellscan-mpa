@@ -47,7 +47,7 @@
         bottom
         right
         fab
-        @click="openScanner = !openScanner"
+        @click="openScanner = !openScanner; $router.push('#open-scanner');"
       >
         <v-icon>mdi-barcode-scan</v-icon>
       </v-btn>
@@ -61,7 +61,7 @@
         <div>
           <v-btn
             block
-            @click="openScanner = !openScanner"
+            @click="openScanner = !openScanner; $router.back();"
           >
             close
           </v-btn>
@@ -95,7 +95,7 @@
                 <v-btn
                   color="white"
                   text
-                  @click="foodClicked = !foodClicked"
+                  @click="foodClicked = !foodClicked; $router.back();"
                 >
                   <v-icon>mdi-close</v-icon>
                 </v-btn>
@@ -312,6 +312,11 @@ import 'firebase/firestore';
 
         let that = this;
         that.foodClicked = !that.foodClicked;
+        
+        this.$router.push("#single-food");
+   
+
+        
         that.activeFood = that.items[index];
         var api_prefix = "https://v2.api.wellscan.io/api/";
          //api_prefix = "http://localhost:8000/api/"
@@ -352,7 +357,7 @@ import 'firebase/firestore';
         this.foodClicked = !this.foodClicked;
         var api_prefix = "https://v2.api.wellscan.io/api/";
          //api_prefix = "http://localhost:8000/api/"
-
+        this.$router.back();
         // data to be sent to the POST request
         let _data = {
           upc:this.activeFood.upc,
@@ -526,6 +531,24 @@ import 'firebase/firestore';
     }
  
 
+  },
+
+  watch: {
+    '$route.hash'(newHash, oldHash) {
+      if (newHash === '#single-food') {
+        this.foodClicked = true;
+      } else if (oldHash === '#single-food') {
+        this.foodClicked = false;
+      }
+
+      if (newHash === '#open-scanner') {
+        this.openScanner = true;
+      } else if (oldHash === '#open-scanner') {
+        this.openScanner = false;
+      }
+
+
+    },
   },
 
     mounted() {
