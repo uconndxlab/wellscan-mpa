@@ -1,7 +1,7 @@
 <template>
 <div>
-    <img style="max-width:100%;text-align:center;" src="@/assets/logo.png">
-  <v-card>
+  <div class="text">WELLSCAN</div>
+  <v-card flat tile>
     <v-tabs
       v-model="tab"
       centered
@@ -26,7 +26,7 @@
       <v-tab-item
         :value="'tab-login'"
       >
-        <v-card light>
+        <v-card flat tile light>
           <v-form>
 
                <v-container>
@@ -73,7 +73,7 @@
           </v-form>
           <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn block large color="primary" @click="attemptLogin()">Log In</v-btn>
+                <v-btn depressed tile block large color="primary" @click="attemptLogin()">Log In</v-btn>
             </v-card-actions>
 
         </v-card>
@@ -174,7 +174,7 @@
             </v-container>
             </v-form>
             <v-card-actions>
-                <v-btn v-if="!newUser.createdNewUser" @click="register()" block large color="primary">Register</v-btn>
+                <v-btn v-if="!newUser.createdNewUser" @click="register()" tile depressed block large color="primary">Register</v-btn>
             </v-card-actions>
         </v-card>
       </v-tab-item>
@@ -306,3 +306,21 @@ import firebase from "firebase";
   }
   }
 </script>
+
+<style scoped>
+
+
+.text {
+  background-color: white;
+  color: black;
+  font-size: 10vw; /* Responsive font size */
+  font-weight: bold;
+  margin: 0 auto; /* Center the text container */
+  padding: 10px;
+  width: 100%;
+  text-align: center; /* Center text */
+  position: relative;
+
+  mix-blend-mode: screen; /* This makes the cutout text possible */
+}
+</style>

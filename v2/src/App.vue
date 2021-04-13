@@ -36,7 +36,7 @@
       </v-list>
       
          <div v-if="user.loggedIn" class="pa-2">
-          <v-btn @click="signOut" block>
+          <v-btn @click="signOut" block depressed tile color="accent">
             Log Out
           </v-btn>
         </div>
@@ -46,7 +46,7 @@
       app
       
       color="secondary"
-      dark
+      
     >
       <div class="d-flex align-center">
         <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
@@ -56,7 +56,7 @@
       <v-spacer></v-spacer>
 
       <v-btn
-      color="white"
+      color="primary"
       icon
       @click="loadFeedbackForm"
         >
@@ -68,22 +68,23 @@
   <v-card tile>
       <v-toolbar
       color="secondary"
-      flat
+      
       fixed
-      dark
+      
       >
         <v-btn
-          color="white"
+          color="primary"
+          
           text
           @click="openFeedback = !openFeedback"
         >
           <v-icon>mdi-close</v-icon>
         </v-btn>
         <v-spacer></v-spacer>
-        Feedback
+        <v-toolbar-title>Feedback</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn
-          color="white"
+          color="primary"
           text
           @click="submitFeedback"
         >
@@ -228,3 +229,10 @@ export default {
   }
 };
 </script>
+
+<style>
+  .v-application--wrap {
+    background:url('~@/assets/bg2.jpg') fixed;
+    background-size:cover;
+  }
+</style>

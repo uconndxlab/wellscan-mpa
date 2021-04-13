@@ -2,14 +2,18 @@
 
   <div>
     <div v-if="!items.length">
-    <v-alert
-      icon="mdi-barcode"
-      prominent
-      text
-      type="info"
-    >
-      <strong>No recent foods.</strong> <p>When you scan foods, they'll show up in a list on this screen.</p>
-    </v-alert>
+    <v-card
+    flat tile>
+      <v-alert
+        icon="mdi-barcode"
+        prominent
+        text
+        
+        type="info"
+      >
+        <strong>No recent foods.</strong> <p>When you scan foods, they'll show up in a list on this screen.</p>
+      </v-alert>
+    </v-card>
     </div>
     <v-list three-line>
       <template v-for="(item, index) in items">
@@ -41,11 +45,13 @@
     <!-- <v-btn block>Load More</v-btn> -->
     <v-fab-transition>
       <v-btn
-        color="primary"
+        color="accent"
         dark
         fixed
         bottom
         right
+        tile
+        
         fab
         @click="openScanner = !openScanner; $router.push('#open-scanner');"
       >
@@ -61,6 +67,9 @@
         <div>
           <v-btn
             block
+            tile
+            depressed
+            color="primary"
             @click="openScanner = !openScanner; $router.back();"
           >
             close
@@ -84,16 +93,15 @@
       </v-sheet>
     </v-bottom-sheet>
 
-    <v-dialog fullscreen transition="dialog-bottom-transition" v-model="foodClicked">
+    <v-bottom-sheet fullscreen transition="dialog-bottom-transition" v-model="foodClicked">
           <v-card tile>
               <v-toolbar
               color="secondary"
-              flat
               fixed
               dark
               >
                 <v-btn
-                  color="white"
+                  color="primary"
                   text
                   @click="foodClicked = !foodClicked; $router.back();"
                 >
@@ -101,7 +109,7 @@
                 </v-btn>
                 <v-spacer></v-spacer>
                 <v-btn
-                  color="white"
+                  color="primary"
                   text
                   @click="saveFood()"
                 >
@@ -109,16 +117,17 @@
                 </v-btn>
               </v-toolbar>
               <div
-                :color="activeFood.rank"
-                :class="['food-header', activeFood.rank]"
-                height="125px"
-              >
                 
-                <v-card-subtitle  class="text-left pb-0">{{activeFood.rank}}</v-card-subtitle>
+                :class="['food-header',activeFood.rank]"
+                
+              >
+
+                <v-card-subtitle class="text-left pb-0"><span v-if="activeFood.rank !== 'unranked'">Choose </span> {{activeFood.rank}}</v-card-subtitle>
+                
                 <v-btn icon style="position:absolute; right:20px; top:70px;" class="text-right pb-0 mb-0 mt-0">
                   <v-icon v-if="activeFood.flagged" color="white">mdi-flag</v-icon>
                 </v-btn>
-                <v-card-title  v-model="activeFood.name" class="text-left pt-0">{{activeFood.name}}</v-card-title>
+                <v-card-title color="primary" v-model="activeFood.name" class="text-left pt-0">{{activeFood.name}}</v-card-title>
                 <v-card-subtitle class="text-left">{{activeFood.upc}}</v-card-subtitle>
 
               </div>
@@ -129,7 +138,7 @@
                 :input-value="activeFood.flagged"
                 @click="flagFood()"
                 style="position:absolute; right:0px; top:-25px; z-index:999"
-                color="secondary"
+                color="primary"
                 filter
                 filter-icon="mdi-flag"
                 
@@ -194,13 +203,15 @@
                   label="Sat. Fat*"
                 ></v-text-field>
                 </v-col>
+       
                 </v-row>
                 </div>
-              <fieldset :class="categoryCheck">
-                <legend @click="showCategoryExplainer">
-                <v-btn text><v-icon>mdi-information</v-icon> Category Information*</v-btn></legend>
+           
+                
+                <v-btn color="primary" @click="showCategoryExplainer" text>Category Information*</v-btn>
 
                 <v-chip-group
+                
                   active-class="primary--text"
                   v-model="activeFood.category"
                   column
@@ -209,12 +220,13 @@
                     v-for="tag in tags"
                     :key="tag.abbr"
                     :value="tag.abbr"
+                    class="rounded-0"
                     @click="setCat(tag.abbr)"
                   >
                     {{ tag.name }}
                   </v-chip>
                 </v-chip-group>   
-              </fieldset>
+              
               
                 <!-- <v-file-input
                 @change="handleImage"
@@ -226,25 +238,25 @@
               <img :src="activeFood.img"> -->
               </v-card-text>              
             </v-card>
-    </v-dialog>
+    </v-bottom-sheet>
 
 <v-dialog fullscreen v-model="showCategoryInfo">
   <v-card tile>
       <v-toolbar
       color="secondary"
-      flat
+      
       fixed
-      dark
+      
       >
         <v-btn
-          color="white"
+          color="primary"
           text
           @click="showCategoryInfo = !showCategoryInfo"
         >
           <v-icon>mdi-close</v-icon>
         </v-btn>
 
-        Category Information
+        <v-toolbar-title>Category Information</v-toolbar-title>
 
       </v-toolbar>
       <v-card-text>
@@ -252,7 +264,7 @@
           <v-row>
             <v-col
               cols="12"
-              class="ma-5"
+              
             >
               <p>Category is a required field when calculating a rank.</p>
 
@@ -697,12 +709,29 @@ import 'firebase/firestore';
   }
 </script>
 <style scoped>
-.v-card__title {
+
+.food-header {
+  padding-top:20px;
+  background:url('~@/assets/bg1.jpg');
+  background-size:cover;
+
+  background-blend-mode: multiply;
+}
+
+.food-header .v-card__title {
   word-break: break-word;
   height:2em;
   line-height:1em;
   text-overflow:ellipsis;
   overflow:hidden;
+  max-width: 70%;
+    color:#fff!important;
+}
+
+.food-header .v-card__subtitle {
+  color:#fff;
+  text-transform: uppercase;
+  font-weight: 800;
 }
 
 .v-toolbar--flat {
@@ -770,7 +799,7 @@ import 'firebase/firestore';
 fieldset {
   padding:5px;
   border:1px solid rgba(0,0,0,0.38);
-  border-radius:4px;
+  border-radius:0px;
 }
 
 fieldset legend {
@@ -784,6 +813,15 @@ fieldset legend {
 
 fieldset.error-outline {
   border:1px solid #b71c1c;
+}
+
+.v-list--three-line .v-list-item, .v-list-item--three-line {
+  background-color:#fff;
+  margin-bottom:4px;
+}
+
+.v-list {
+  background:transparent!important;
 }
 
 </style>
