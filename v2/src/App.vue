@@ -222,8 +222,6 @@ export default {
             usr_type:usr_type
           };
         });
-
-
       }
     });
   }
@@ -231,8 +229,17 @@ export default {
 </script>
 
 <style>
+  /** Totally wasteful prefetching /shrug */
+  html {
+    background-image:url('~@/assets/bg1.jpg');
+    background-size:0;
+  }
   .v-application--wrap {
     background:url('~@/assets/bg2.jpg') fixed;
     background-size:cover;
+    background-color:rgba(255,255,255,0.35);
+    background-blend-mode:overlay;
   }
+
+
 </style>

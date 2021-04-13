@@ -54,7 +54,7 @@
         <v-btn
             v-if="this.folder == 'Active Foods'"
             dark
-            color="secondary"
+            color="accent"
             @click="prepSnapshot()">
             <v-icon>mdi-export</v-icon>
             Save Snapshot
@@ -67,7 +67,9 @@
     :headers="headers"
     :items="items"
     :items-per-page="15"
-    class="elevation-1"
+    flat
+    
+    class="elevation-1 rounded-0"
   >
     
     <template v-slot:[`item.rank`]="{ item }">

@@ -9,7 +9,7 @@
               dark
               >
                 <v-btn
-                  color="white"
+                  color="primary"
                   text
                   @click="foodClicked = !foodClicked; $router.back();"
                 >
@@ -17,7 +17,7 @@
                 </v-btn>
                 <v-spacer></v-spacer>
                 <v-btn
-                  color="white"
+                  color="primary"
                   text
                   @click="saveFood()"
                 >
@@ -45,7 +45,7 @@
                 :input-value="activeFood.flagged"
                 @click="flagFood()"
                 style="position:absolute; right:0px; top:-25px; z-index:999"
-                color="secondary"
+                color="primary"
                 filter
                 filter-icon="mdi-flag"
                 
