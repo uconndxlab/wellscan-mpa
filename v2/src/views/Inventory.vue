@@ -14,18 +14,7 @@
         dark
         color="primary"
     >
-        <v-toolbar-title tile>Inbox <small>{{user.organization}}</small></v-toolbar-title>
-        
-        <v-spacer></v-spacer>
-
-        <v-btn
-            dark
-            color="secondary">
-            <v-icon>mdi-export</v-icon>
-            export
-        </v-btn>    
-
-        <v-menu
+            <v-menu
         bottom
         left
         >
@@ -58,6 +47,20 @@
                 </v-list-item>                     -->
             </v-list>
         </v-menu>
+        <v-toolbar-title tile>{{folder}} <small>{{user.organization}}</small></v-toolbar-title>
+        
+        <v-spacer></v-spacer>
+
+        <v-btn
+            v-if="this.folder == 'Active Foods'"
+            dark
+            color="secondary"
+            @click="prepSnapshot()">
+            <v-icon>mdi-export</v-icon>
+            Save Snapshot
+        </v-btn>    
+
+
 
     </v-toolbar>
  <v-data-table
@@ -77,18 +80,118 @@
     </template>
 
     <template v-slot:[`item.actions`]="{ item }">
-      <v-btn small>
-        archive
-        <v-icon
-          small
-          @click="deleteItem(item)"
+      <v-btn v-if="item.status == 'active' && item.flagged == false" @click="archiveItem(item)" text small>
+        <v-icon          
         >
           mdi-archive
         </v-icon>
       </v-btn>
+
+      <v-btn @click="loadItem(item)" text color="success" small>
+        <v-icon          
+        >
+          mdi-magnify
+        </v-icon>
+      </v-btn>
+
+      <v-btn v-if="item.status == 'archived'" color="error" @click="deleteItem(item)" text small>
+        
+        <v-icon
+          small
+          
+        >
+          mdi-delete
+        </v-icon>
+      </v-btn>
+
     </template>
-  
   </v-data-table>
+
+<v-dialog
+  v-model="showExport"
+  fullscreen
+  hide-overlay
+  transition="dialog-bottom-transition"
+>
+  <v-card>
+    <v-toolbar
+      dark
+      color="secondary"
+    >
+      <v-btn
+        icon
+        dark
+        @click="showExport = false"
+      >
+        <v-icon>mdi-close</v-icon>
+      </v-btn>
+      <v-toolbar-title>Save Snapshot</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-toolbar-items>
+        <v-btn
+          dark
+          text
+          @click="saveSnapshot"
+        >
+          Save
+        </v-btn>
+      </v-toolbar-items>
+    </v-toolbar>
+    <v-card-text>
+      <div style="margin-top:20px">
+        <v-text-field
+          v-model="snapshot.name"
+          dense
+          label="Snapshot Name"
+          outlined
+        ></v-text-field>
+        <v-card-subtitle>Custom Fields</v-card-subtitle>
+        <v-row v-bind:key="index" v-for="(field,index) in snapshot.meta">
+          <v-col cols="5">
+            <v-text-field
+              v-model="field.name"
+              dense
+              label="Field Name"
+              outlined
+            ></v-text-field>
+          </v-col>
+
+          <v-col cols="5">
+            <v-text-field
+              v-model="field.value"
+              dense
+              label="Field Value"
+              outlined
+            ></v-text-field>
+          </v-col>
+
+          <v-col cols="2">
+            <v-btn
+              @click="deleteSnapshotField(index)"
+            >
+              Delete
+            </v-btn>
+          </v-col>
+
+        </v-row>
+        <v-row>
+          <v-btn
+          @click="snapshot.meta.push({name:'New Field Name', value:'New Field value'})"
+            block>
+            Add a Field
+            
+          </v-btn>
+        </v-row>
+        
+        </div>
+    </v-card-text>
+  </v-card>
+</v-dialog>
+
+
+ 
+
+
  </div>
 </template>
 
@@ -100,13 +203,16 @@ export default {
   name: 'Inventory',
   data () {
       return {
+        showSingleItem:false,
         user: {
             displayName: "",
             email: "",
             organization:"organization",
             loggedIn:false,
-            usr_type:""
+            usr_type:"",
         },
+        showExport: false,
+        folder:"Active Foods",
         headers: [
           {
             text: 'Name',
@@ -114,20 +220,32 @@ export default {
             sortable: false,
             value: 'name',
           },
-          { text: 'UPC', value: 'upc' },
           { text: 'Rank', value: 'rank' },
-          { text: 'Date', value:'date_scanned'},
-          { text: 'BlameID', value: 'scanned_by' },
           { text: 'Actions', value:'actions', sortable: false},
         ],
         items: [
 
         ],
+        snapshot: 
+        {
+          name:"Name",
+          meta:[
+            {
+              name:"Custom Field Name",
+              value:"Custom Field Value"
+            }
+          ],
+          items:[]
+        }
       }
     },
 
     methods: {
+        deleteSnapshotField(index) {
+          this.snapshot.meta.splice(index, 1);
+        },
         getInventoryForOrg() {
+            this.folder="Active Foods";
             let org = this.user.organization;
             
             let that = this;
@@ -147,25 +265,27 @@ export default {
 
                     item.date_scanned = item.date_scanned.toDate();
                     item.id = doc.id;
-                    item.nutrition = {
-                        nf_sodium:0,
-                        nf_saturated_fat: 0,
-                        nf_sugars: 0
-                    };
+
                     
                     
                     if(typeof item.flagged == "undefined") {
                         item.flagged = false
                     }
                     
-                    if(item.status == "active")
+                    if(item.status == "active" && item.flagged == false)
                         that.items.push(item);
 
                 });
             })
         },
 
+        loadItem(item) {
+          console.log(item);
+          this.$router.push("/singleFood/"+item.id)
+        },
+
         getArchivedItems() {
+            this.folder="Archived Foods";
             let org = this.user.organization;
             
             let that = this;
@@ -185,18 +305,14 @@ export default {
 
                     item.date_scanned = item.date_scanned.toDate();
                     item.id = doc.id;
-                    item.nutrition = {
-                        nf_sodium:0,
-                        nf_saturated_fat: 0,
-                        nf_sugars: 0
-                    };
+
                     
                     
                     if(typeof item.flagged == "undefined") {
                         item.flagged = false
                     }
                     
-                    if(item.status == "archived")
+                    if(item.status == "archived" && item.flagged == false)
                         that.items.push(item);
 
                 });
@@ -204,6 +320,7 @@ export default {
         },
 
         getFlaggedItems() {
+            this.folder="Flagged Foods";
             let org = this.user.organization;
             
             let that = this;
@@ -223,11 +340,7 @@ export default {
 
                     item.date_scanned = item.date_scanned.toDate();
                     item.id = doc.id;
-                    item.nutrition = {
-                        nf_sodium:0,
-                        nf_saturated_fat: 0,
-                        nf_sugars: 0
-                    };
+
                     
                     
                     if(typeof item.flagged == "undefined") {
@@ -239,6 +352,79 @@ export default {
 
                 });
             })
+        },
+
+        archiveItem(item) {
+            console.log(item);
+            let that = this;
+
+            var db = firebase.firestore();
+
+            db.collection("organizations")
+            .doc(that.user.organization)
+            .collection("inventory")
+            .doc(item.id)
+            .set({
+              status:"archived"
+            }, 
+            {merge:true})
+        },
+
+        toggleFlag(item) {
+          let that = this;
+          var db = firebase.firestore();
+          db.collection("organizations")
+            .doc(that.user.organization)
+            .collection("inventory")
+            .doc(item.id)
+            .set({
+              flagged:false
+            }, 
+            {merge:true})
+        },
+
+        deleteItem(item) {
+            console.log(item);
+            let that = this;
+
+            var db = firebase.firestore();
+
+            db.collection("organizations")
+            .doc(that.user.organization)
+            .collection("inventory")
+            .doc(item.id)
+            .delete()
+            
+        },
+
+        prepSnapshot() {
+          this.showExport = true;
+        },
+
+        saveSnapshot() {
+          this.showExport = false;
+          var db = firebase.firestore();
+          let org = this.user.organization;
+          this.snapshot.DateSaved = new Date()
+          this.snapshot.items = this.items;
+          let snapshot = this.snapshot;
+
+         
+
+          var docRef = db.collection("organizations")
+          .doc(org)
+          .collection("reports")
+          .doc();
+          
+          docRef.set(snapshot).then(() => {
+              this.$router.push("/singleReport/"+docRef.id);
+              console.log("Document successfully updated!");
+              
+          })
+          .catch((error) => {
+              // The document probably doesn't exist.
+              console.error("Error updating document: ", error);
+          });
         }
     },
 

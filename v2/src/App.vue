@@ -85,7 +85,7 @@
         <v-btn
           color="white"
           text
-          @click="openFeedback = !openFeedback"
+          @click="submitFeedback"
         >
           submit
         </v-btn>
@@ -95,11 +95,12 @@
           <v-row>
             <v-col
               cols="12"
-              md="6"
+              
             >
               <v-textarea
                 label="Your message..."
                 placeholder="Type your feedback here..."
+                v-model="bugText"
                 hint="Your name and organization will be automatically included."
               ></v-textarea>
             </v-col>
@@ -141,10 +142,12 @@ export default {
           usr_type:""
      },
      openFeedback:false,
+     bugText:"",
      drawer: null,
      items: [
           { title: "Scan", icon: 'mdi-barcode', to:"/", class:""},
-          { title: 'Inventory', icon: 'mdi-view-dashboard', to:"/inventory", class:"d-none d-md-flex d-md-none" },
+          { title: 'Inventory', icon: 'mdi-view-list', to:"/inventory", class:"d-none d-md-flex d-md-none" },
+          { title: 'Saved Snapshots', icon: 'mdi-view-dashboard', to:"/savedSnaps", class:"d-none d-md-flex d-md-none" },
           { title: 'About WellSCAN', icon: 'mdi-information', to:"/about", class:"" },
         ],
   }),
@@ -164,6 +167,29 @@ export default {
     loadFeedbackForm() {
       console.log("wtf");
       this.openFeedback = !this.openFeedback;
+    },
+
+    submitFeedback() {
+        var db = firebase.firestore();
+        var that = this;
+        
+        db.collection("bugReports")
+            .add({
+                date_reported: new Date(),
+                current_page:that.$route.name,
+                org:that.user.organization,
+                usr:that.user.email,
+                description:that.bugText
+            }
+        )
+        .then(function(docRef) {
+            that.bugText = "";
+            that.openFeedback = !that.openFeedback;
+            console.log("Your bug has been saved with ID " + docRef.id);
+        })
+        .catch(function(error) {
+            console.error("Error adding document: ", error);
+        });
     }
   },
 

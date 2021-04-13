@@ -1,89 +1,5 @@
 <template>
-
   <div>
-    <div v-if="!items.length">
-    <v-alert
-      icon="mdi-barcode"
-      prominent
-      text
-      type="info"
-    >
-      <strong>No recent foods.</strong> <p>When you scan foods, they'll show up in a list on this screen.</p>
-    </v-alert>
-    </div>
-    <v-list three-line>
-      <template v-for="(item, index) in items">
-        <v-list-item
-          :key="index"
-          v-if="(item.status == 'active')"
-        >
-          <v-list-item-avatar :class="item.rank"></v-list-item-avatar>
-
-          <v-list-item-content
-              @click="loadSingleFood(index)"
-            >
-            <v-list-item-title v-html="item.name"></v-list-item-title>
-            <v-list-item-subtitle v-html="item.upc"></v-list-item-subtitle>
-          </v-list-item-content>
-          <v-list-item-action>
-            <v-btn icon @click="removeItem(index)">
-                <v-icon>                        
-                  mdi-delete-outline
-                </v-icon>
-            </v-btn>
-            </v-list-item-action>
-            
-        </v-list-item>
-       
-      </template>
-    </v-list>
-  
-    <!-- <v-btn block>Load More</v-btn> -->
-    <v-fab-transition>
-      <v-btn
-        color="primary"
-        dark
-        fixed
-        bottom
-        right
-        fab
-        @click="openScanner = !openScanner; $router.push('#open-scanner');"
-      >
-        <v-icon>mdi-barcode-scan</v-icon>
-      </v-btn>
-    </v-fab-transition>
-
-    <v-bottom-sheet v-model="openScanner">
-      <v-sheet
-        class="text-center" 
-      >
-
-        <div>
-          <v-btn
-            block
-            @click="openScanner = !openScanner; $router.back();"
-          >
-            close
-          </v-btn>
-          <StreamBarcodeReader v-if="openScanner"
-          @decode="onBarcodeDecode"
-          @loaded="onCameraLoaded"
-          
-          >      
-          </StreamBarcodeReader>
-          <v-text-field
-            class="mx-6 centered-input"
-            v-model="upcToSearch"
-            append-outer-icon="mdi-magnify"
-            @click:append-outer="addFoodToInventory"
-          ></v-text-field> 
-
-        </div>
-
-
-      </v-sheet>
-    </v-bottom-sheet>
-
     <v-dialog fullscreen transition="dialog-bottom-transition" v-model="foodClicked">
           <v-card tile>
               <v-toolbar
@@ -255,7 +171,7 @@
               class="ma-5"
             >
               <p>Category is a required field when calculating a rank.</p>
-
+              
               <h2>Fruits and Vegetables</h2>
               <p>Fresh, canned, frozen, and dried fruits and vegetables, frozen broccoli with cheese sauce, apple sauce, tomato sauce, 100% juice, 100% fruit popsicle</p>
               
@@ -299,25 +215,20 @@
   </v-card>
 </v-dialog  >
 
-
-
-
-
-
-
   </div>
   
 </template>
 
 <script>
-import { StreamBarcodeReader } from "vue-barcode-reader";
+
 import firebase from "firebase/app";
 import 'firebase/firestore';
   export default {
-    name: 'HelloWorld',
+    name: 'InventoryItem',
     components: {
-        StreamBarcodeReader,
+        
       },
+    props:['inventoryId'],
     data: () => ({
     user: {
           displayName: "",
@@ -326,7 +237,6 @@ import 'firebase/firestore';
           loggedIn:false,
           usr_type:""
      },
-      openScanner:false,
       foodClicked:false,
       upcToSearch:"",
       showCategoryInfo: false,
@@ -394,38 +304,17 @@ import 'firebase/firestore';
         this.showCategoryInfo = true;
       },
 
-      handleImage(e) {
-        console.log(e);
-        //this.createBase64Image(e[0]);
-      },
-
-      createBase64Image(obj){
-        let that = this;
-        const reader = new FileReader();
-
-        reader.onload = (e) => {
-          that.activeFood.img = e.target.result;
-        }
-
-        reader.readAsBinaryString(obj);
-      },
-
       setCat(cat){
         this.activeFood.category = cat;
         console.log(this.activeFood.category);
         this.calculateRankOfActiveFood();
       },
  
-      loadSingleFood(index) {
+      loadSingleFood() {
 
         let that = this;
-        that.foodClicked = !that.foodClicked;
-        
-        this.$router.push("#single-food");
+        that.foodClicked = !that.foodClicked;       
    
-
-        
-        that.activeFood = that.items[index];
         var api_prefix = "https://v2.api.wellscan.io/api/";
          //api_prefix = "http://localhost:8000/api/"
         fetch(api_prefix + "foods/lookup/"+this.activeFood.upc)
@@ -449,6 +338,7 @@ import 'firebase/firestore';
                 that.activeFood.name = data.name;
 
                 that.onFoodUpdated();
+                that.foodClicked = true;
               })
             }
         )
@@ -458,6 +348,34 @@ import 'firebase/firestore';
         console.log("Flagging food...");
         this.activeFood.flagged = !this.activeFood.flagged;
         this.onFoodUpdated();
+      },
+
+      getFoodByInventoryId() {
+        let that = this;
+
+        var db = firebase.firestore();
+        console.log(that.inventoryId);
+        db.collection("organizations")
+            .doc(that.user.organization)
+            .collection("inventory")
+            .doc(that.inventoryId).get().then(function(doc){
+        //   name: 'Not Found',
+        //   upc: "",
+        //   rank:"",
+        //   category:"",
+        //   flagged:"",
+
+                var food = doc.data();
+                
+                that.activeFood.id = doc.id;
+                that.activeFood.name = food.name;
+                that.activeFood.upc = food.upc;
+                that.activeFood.rank = food.rank;
+                that.activeFood.category = food.category;
+                that.activeFood.flagged = food.flagged;
+                that.activeFood.status = food.status;
+                that.loadSingleFood();
+            })
       },
 
       saveFood() {
@@ -490,91 +408,6 @@ import 'firebase/firestore';
         .then(json => console.log(json))
         .catch(err => console.log(err));
   
-      },
-
-      onBarcodeDecode(results) {
-        this.upcToSearch = results;
-        this.$router.back();
-        // navigator.vibrate(200);
-        // window.navigator.vibrate(200);
-        this.addFoodToInventory();
-      },
-
-      onCameraLoaded() {
-        this.upcToSearch = "";
-        console.log("Loaded camera");
-      },
-
-      lookUpFood() {
-
-      },
-
-      addFoodToInventory() {
-          this.$router.back();
-          var db = firebase.firestore();
-          var that = this;
-          
-          db.collection("organizations")
-          .doc(that.user.organization)
-          .collection("inventory")
-          .add({
-              upc:that.upcToSearch,
-              status:"active",
-              name:"Unknown",
-              rank:"unranked",
-              scanned_by:that.user.email,
-              date_scanned:new Date(),
-            })
-          .then(function(docRef) {
-              that.loadSingleFood(0);
-              that.openScanner =  !that.openScanner;
-              console.log("Your item has been saved with ID " + docRef.id);
-          })
-          .catch(function(error) {
-              console.error("Error adding document: ", error);
-        });
-      },
-
-      getInventoryScannedByUser() {
-        let org = this.user.organization;
-        let user= this.user.email;
-        let that = this;
-
-        var db = firebase.firestore();
-        
-        var listRef = db.collection("organizations")
-        .doc(org)
-        .collection("inventory")
-        // .where("scanned_by", "==", user)
-        .orderBy("date_scanned", "desc")
-        .limit(40);
-        
-
-        listRef.onSnapshot(querySnapshot => {    
-            that.items = [];       
-            querySnapshot.forEach(function(doc) {
-                 
-                
-                var item = doc.data();
-
-                item.date_scanned = item.date_scanned.toDate();
-                item.id = doc.id;
-                item.nutrition = {
-                  nf_sodium:"",
-                  nf_saturated_fat: "",
-                  nf_sugars: ""
-                };
-                
-                
-                if(typeof item.flagged == "undefined") {
-                  item.flagged = false
-                }
-                
-                if(item.scanned_by == user)
-                  that.items.push(item);
-
-            });
-        })
       },
 
       calculateRankOfActiveFood() {
@@ -610,14 +443,13 @@ import 'firebase/firestore';
         let that = this;
 
         var db = firebase.firestore();
-
         db.collection("organizations")
         .doc(that.user.organization)
         .collection("inventory")
         .doc(that.activeFood.id)
         .set({
           name:that.activeFood.name,
-          category:that.activeFood.category,
+          category:that.activeFood.rank,
           status:that.activeFood.status,
           flagged:that.activeFood.flagged,
           rank:that.activeFood.rank
@@ -641,24 +473,6 @@ import 'firebase/firestore';
     }
  
 
-  },
-
-  watch: {
-    '$route.hash'(newHash, oldHash) {
-      if (newHash === '#single-food') {
-        this.foodClicked = true;
-      } else if (oldHash === '#single-food') {
-        this.foodClicked = false;
-      }
-
-      if (newHash === '#open-scanner') {
-        this.openScanner = true;
-      } else if (newHash !== '#open-scanner') {
-        this.openScanner = false;
-      }
-
-
-    },
   },
 
     mounted() {
@@ -687,7 +501,7 @@ import 'firebase/firestore';
                 usr_type:usr_type
               };
 
-              that.getInventoryScannedByUser();
+              that.getFoodByInventoryId();
 
             });
         }
