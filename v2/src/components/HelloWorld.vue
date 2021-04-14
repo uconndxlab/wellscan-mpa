@@ -18,6 +18,7 @@
     <v-list three-line>
       <template v-for="(item, index) in items">
         <v-list-item
+          ripple
           :key="index"
           v-if="(item.status == 'active')"
         >
@@ -63,29 +64,46 @@
       <v-sheet
         class="text-center" 
       >
-
-        <div>
-          <v-btn
-            block
-            tile
-            depressed
-            color="primary"
+      <v-toolbar
+      color="secondary"
+      
+      fixed
+      
+      >
+        <v-btn
+          color="primary"
+          
+          text
+                      
             @click="openScanner = !openScanner; $router.back();"
-          >
-            close
-          </v-btn>
+        >
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+    
+        <v-spacer></v-spacer>
+          <v-text-field
+            class="centered-input"
+            v-model="upcToSearch"
+          ></v-text-field> 
+
+          <v-spacer></v-spacer>
+        <v-btn
+          color="primary"
+          text
+          @click="addFoodToInventory"
+        >
+          submit
+        </v-btn>
+          
+      </v-toolbar>
+        <div>
           <StreamBarcodeReader v-if="openScanner"
           @decode="onBarcodeDecode"
           @loaded="onCameraLoaded"
           
           >      
           </StreamBarcodeReader>
-          <v-text-field
-            class="mx-6 centered-input"
-            v-model="upcToSearch"
-            append-outer-icon="mdi-magnify"
-            @click:append-outer="addFoodToInventory"
-          ></v-text-field> 
+
 
         </div>
 
@@ -103,18 +121,18 @@
                 <v-btn
                   color="primary"
                   text
-                  @click="foodClicked = !foodClicked; $router.back();"
+                  @click="foodClicked = !foodClicked; $router.back();saveFood();"
                 >
                   <v-icon>mdi-close</v-icon>
                 </v-btn>
                 <v-spacer></v-spacer>
-                <v-btn
+                <!-- <v-btn
                   color="primary"
                   text
                   @click="saveFood()"
                 >
                   save
-                </v-btn>
+                </v-btn> -->
               </v-toolbar>
               <div
                 
@@ -161,7 +179,6 @@
                   dense
                   label="Name"
                   outlined
-                  @change="onFoodUpdated"
                 ></v-text-field>
                 <v-row>
                 <v-col
@@ -171,43 +188,44 @@
                     dense
                     v-model="activeFood.nutrition.nf_sodium"
                     label="Sodium*"
+                    @change="activeFood.rank = 'unranked'"
                     outlined
                     :error = "hasNutrientError('nf_sodium')"
-                    @change="calculateRankOfActiveFood"
                   ></v-text-field>
                 </v-col>
 
                 <v-col
                   cols="4">   
-                <v-text-field
-                  type="number"
-                  v-model="activeFood.nutrition.nf_sugars"
-                  :error = "hasNutrientError('nf_sugars')"
-                  
-                  dense
-                  label="Sugars*"
-                  outlined
-                  @change="calculateRankOfActiveFood"
-                ></v-text-field>
+                  <v-text-field
+                    type="number"
+                    v-model="activeFood.nutrition.nf_sugars"
+                    :error = "hasNutrientError('nf_sugars')"
+                    @change="activeFood.rank = 'unranked'"
+                    dense
+                    label="Sugars*"
+                    outlined
+                  ></v-text-field>
                 </v-col>
 
                 <v-col
                   cols="4">   
-                <v-text-field
-                  v-model="activeFood.nutrition.nf_saturated_fat"
-                  type="number"
-                  :error = "hasNutrientError('nf_saturated_fat')"
-                  dense
-                  outlined
-                  @change="calculateRankOfActiveFood"
-                  label="Sat. Fat*"
-                ></v-text-field>
+                  <v-text-field
+                    v-model="activeFood.nutrition.nf_saturated_fat"
+                    @change="activeFood.rank = 'unranked'"
+                    type="number"
+                    :error = "hasNutrientError('nf_saturated_fat')"
+                    dense
+                    outlined
+                    label="Sat. Fat*"
+                  ></v-text-field>
                 </v-col>
        
                 </v-row>
                 </div>
            
-                
+                <v-row>
+                <v-col
+                cols="12">
                 <v-btn color="primary" @click="showCategoryExplainer" text>Category Information*</v-btn>
 
                 <v-chip-group
@@ -225,8 +243,25 @@
                   >
                     {{ tag.name }}
                   </v-chip>
-                </v-chip-group>   
-              
+                </v-chip-group>  
+                </v-col>
+                <v-col v-if="readyToRank" col="12"> 
+                <v-btn
+                  v-if="readyToRank"
+                  color="primary"
+                  block
+                  tile
+                  depressed
+                  @click="calculateRankOfActiveFood"
+                >
+                  Calculate Rank
+                </v-btn>
+                </v-col>
+                </v-row>
+                <v-row v-if="activeFood.rank !== 'unranked'" :class="activeFood.rank">
+                  <v-col cols="6"></v-col>
+                  <v-col cols="6" style="text-transform:capitalize"><h2>Choose {{activeFood.rank}}</h2></v-col>
+                </v-row>
               
                 <!-- <v-file-input
                 @change="handleImage"
@@ -424,8 +459,8 @@ import 'firebase/firestore';
 
       setCat(cat){
         this.activeFood.category = cat;
+        this.activeFood.rank = "unranked";
         console.log(this.activeFood.category);
-        this.calculateRankOfActiveFood();
       },
  
       loadSingleFood(index) {
@@ -438,6 +473,8 @@ import 'firebase/firestore';
 
         
         that.activeFood = that.items[index];
+        
+
         var api_prefix = "https://v2.api.wellscan.io/api/";
          //api_prefix = "http://localhost:8000/api/"
         fetch(api_prefix + "foods/lookup/"+this.activeFood.upc)
@@ -460,7 +497,6 @@ import 'firebase/firestore';
                 that.activeFood.nutrition = data.nutrition;
                 that.activeFood.name = data.name;
 
-                that.onFoodUpdated();
               })
             }
         )
@@ -474,10 +510,9 @@ import 'firebase/firestore';
 
       saveFood() {
         console.log("saveFood()...");
-        this.foodClicked = !this.foodClicked;
         var api_prefix = "https://v2.api.wellscan.io/api/";
          //api_prefix = "http://localhost:8000/api/"
-        this.$router.back();
+        
         // data to be sent to the POST request
         let _data = {
           upc:this.activeFood.upc,
@@ -610,7 +645,6 @@ import 'firebase/firestore';
                   that.activeFood.rank = data.rank;
                   
                   that.onFoodUpdated();
-                 
 
                 });
               });
@@ -634,7 +668,9 @@ import 'firebase/firestore';
           flagged:that.activeFood.flagged,
           rank:that.activeFood.rank
         }, 
-        {merge:true})
+        {merge:true}).then(function(){
+          that.saveFood();
+        });
       },
 
       hasNutrientError(nutrient) {
@@ -650,6 +686,19 @@ import 'firebase/firestore';
       } else {
         return "";
       }
+    },
+
+    readyToRank() {
+      var ready = this.activeFood.category !== null
+        && this.activeFood.nutrition['nf_sodium'].toString().length > 0
+        && this.activeFood.nutrition['nf_saturated_fat'].toString().length > 0
+        && this.activeFood.nutrition['nf_sugars'].toString().length > 0
+        && this.activeFood.category !=="baking-supplies-condiments"
+        && this.activeFood.rank == "unranked";
+
+        console.log(ready);
+        
+        return ready;
     }
  
 
