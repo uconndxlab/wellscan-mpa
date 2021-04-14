@@ -506,7 +506,7 @@ import 'firebase/firestore';
 
       onBarcodeDecode(results) {
         this.upcToSearch = results;
-        this.$router.back();
+        
         // navigator.vibrate(200);
         // window.navigator.vibrate(200);
         this.addFoodToInventory();
