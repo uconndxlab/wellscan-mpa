@@ -99,9 +99,7 @@
         <div>
           <StreamBarcodeReader v-if="openScanner"
           @decode="onBarcodeDecode"
-          @loaded="onCameraLoaded"
-          
-          >      
+          @loaded="onCameraLoaded">      
           </StreamBarcodeReader>
 
 
@@ -121,7 +119,7 @@
                 <v-btn
                   color="primary"
                   text
-                  @click="foodClicked = !foodClicked; $router.back();saveFood();"
+                  @click="foodClicked = !foodClicked; $router.back();onFoodUpdated();"
                 >
                   <v-icon>mdi-close</v-icon>
                 </v-btn>
@@ -271,6 +269,22 @@
                 label="Add a photo (optional)"
               ></v-file-input>
               <img :src="activeFood.img"> -->
+
+                  <v-fab-transition>
+      <v-btn
+        color="accent"
+        dark
+        fixed
+        bottom
+        right
+        tile
+        
+        fab
+        @click="foodClicked = !foodClicked; onFoodUpdated(); openScanner = !openScanner; $router.push('#open-scanner');"
+      >
+        <v-icon>mdi-barcode-scan</v-icon>
+      </v-btn>
+    </v-fab-transition>
               </v-card-text>              
             </v-card>
     </v-bottom-sheet>
@@ -526,7 +540,7 @@ import 'firebase/firestore';
           nutrition_method:"manual"
         }
 
-        console.log(_data);
+        //console.log(_data);
 
         fetch(api_prefix + 'foods/'+this.activeFood.upc, {
           method: "PUT",
