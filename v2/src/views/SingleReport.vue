@@ -12,7 +12,8 @@
 
             
             <v-btn
-                color="secondary"
+                
+                
                 @click="downloadCSV"
             >
                 Download CSV <v-icon>mdi-download</v-icon>
