@@ -186,7 +186,7 @@
                     dense
                     v-model="activeFood.nutrition.nf_sodium"
                     label="Sodium*"
-                    @change="activeFood.rank = 'unranked'"
+                    @keyup="activeFood.rank = 'unranked'; activeFood.flagged = true;"
                     outlined
                     :error = "hasNutrientError('nf_sodium')"
                   ></v-text-field>
@@ -198,7 +198,7 @@
                     type="number"
                     v-model="activeFood.nutrition.nf_sugars"
                     :error = "hasNutrientError('nf_sugars')"
-                    @change="activeFood.rank = 'unranked'"
+                    @keyup="activeFood.rank = 'unranked'; activeFood.flagged = true;"
                     dense
                     label="Sugars*"
                     outlined
@@ -209,7 +209,7 @@
                   cols="4">   
                   <v-text-field
                     v-model="activeFood.nutrition.nf_saturated_fat"
-                    @change="activeFood.rank = 'unranked'"
+                    @keyup="activeFood.rank = 'unranked'; activeFood.flagged = true;"
                     type="number"
                     :error = "hasNutrientError('nf_saturated_fat')"
                     dense
