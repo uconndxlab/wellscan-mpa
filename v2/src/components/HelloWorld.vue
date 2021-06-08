@@ -864,6 +864,23 @@ import 'firebase/firestore';
     background-image:url('~@/assets/category-backgrounds/fruit-vegetable.jpg');
 }
 
+.food-header.dairy{
+    background-image:url('~@/assets/category-backgrounds/dairy.jpg');
+}
+
+.food-header.non-dairy-alternative {
+    background-image:url('~@/assets/category-backgrounds/non-dairy-alternative.jpg');
+}
+
+.food-header.baking-supplies-condiments {
+    background-image:url('~@/assets/category-backgrounds/baking-supplies-condiments.jpg');
+}
+
+.food-header.dessert{
+    background-image:url('~@/assets/category-backgrounds/dessert.jpg');
+}
+
+
 .food-header .v-card__title {
   word-break: break-word;
   height:2em;

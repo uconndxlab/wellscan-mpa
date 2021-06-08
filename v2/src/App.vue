@@ -110,7 +110,7 @@
          </v-container>
       </v-card-text>
   </v-card>
-</v-dialog  >
+</v-dialog>
   <!-- Sizes your content based upon application components -->
   <v-content>
     
@@ -244,6 +244,7 @@ export default {
       url('~@/assets/category-backgrounds/grain.jpg'),
       url('~@/assets/category-backgrounds/processed-packaged-snack.jpg'),
       url('~@/assets/category-backgrounds/snack-whole-grain.jpg'),
+      url('~@/assets/category-backgrounds/dessert.jpg'),
 
       
 
