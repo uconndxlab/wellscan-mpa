@@ -134,7 +134,7 @@
               </v-toolbar>
               <div
                 
-                :class="['food-header',activeFood.rank]"
+                :class="['food-header',activeFood.rank, activeFood.category]"
                 
               >
 
@@ -152,7 +152,7 @@
               <v-chip
                 class="ma-2 rounded-0"
                 :input-value="activeFood.flagged"
-                @click="flagFood()"
+                @click="showFlagDetails = true"
                 style="position:absolute; right:0px; top:-25px; z-index:999"
                 color="primary"
                 filter
@@ -358,9 +358,54 @@
          </v-container>
       </v-card-text>
   </v-card>
-</v-dialog  >
+</v-dialog>
 
-
+<v-dialog  v-model="showFlagDetails">
+  <v-card tile>
+      <v-toolbar
+      color="secondary"
+      
+      fixed
+      
+      >
+        <v-btn
+          color="primary"
+          
+          text
+          @click="showFlagDetails = !showFlagDetails"
+        >
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+        <v-spacer></v-spacer>
+        <v-toolbar-title>Flag Details</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-btn
+          color="primary"
+          text
+          @click="flagFood()"
+        >
+          submit
+        </v-btn>
+      </v-toolbar>
+      <v-card-text>
+         <v-container fluid>
+          <v-row>
+            <v-col
+              cols="12"
+              
+            >
+              <v-textarea
+                label="Flag Details"
+                placeholder="Why are you flagging this food?"
+                v-model="activeFood.flagText"
+                hint="Why are you flagging this food?"
+              ></v-textarea>
+            </v-col>
+          </v-row>
+         </v-container>
+      </v-card-text>
+  </v-card>
+</v-dialog>
 
 
 
@@ -387,8 +432,10 @@ import 'firebase/firestore';
           loggedIn:false,
           usr_type:""
      },
+      showFlagDetails: false,
       openScanner:false,
       foodClicked:false,
+      
       upcToSearch:"",
       showCategoryInfo: false,
       activeFood: {          
@@ -397,6 +444,7 @@ import 'firebase/firestore';
           rank:"",
           category:"",
           flagged:"",
+          flagText:"",
           nutrition: {
             nf_sodium:"",
             nf_saturated_fat:"",
@@ -519,7 +567,9 @@ import 'firebase/firestore';
       flagFood() {
         console.log("Flagging food...");
         this.activeFood.flagged = !this.activeFood.flagged;
+        this.showFlagDetails = false;
         this.onFoodUpdated();
+        this.flagText = null;
       },
 
       saveFood() {
@@ -630,6 +680,10 @@ import 'firebase/firestore';
                 if(typeof item.flagged == "undefined") {
                   item.flagged = false
                 }
+
+                if(typeof item.flagText == "undefined") {
+                  item.flagText = ""
+                }
                 
                 if(item.scanned_by == user)
                   that.items.push(item);
@@ -680,6 +734,7 @@ import 'firebase/firestore';
           category:that.activeFood.category,
           status:that.activeFood.status,
           flagged:that.activeFood.flagged,
+          flagText:that.activeFood.flagText,
           rank:that.activeFood.rank
         }, 
         {merge:true}).then(function(){
@@ -775,10 +830,38 @@ import 'firebase/firestore';
 
 .food-header {
   padding-top:20px;
-  background:url('~@/assets/bg1.jpg');
   background-size:cover;
 
   background-blend-mode: multiply;
+}
+
+.food-header.mixed-dish {
+    background-image:url('~@/assets/category-backgrounds/mixed-dish.jpg');
+}
+
+.food-header.grain {
+    background-image:url('~@/assets/category-backgrounds/grain.jpg');
+}
+
+.food-header.grain-whole {
+    background-image:url('~@/assets/category-backgrounds/grain-whole.jpg');
+}
+
+.food-header.processed-packaged-snack {
+    background-image:url('~@/assets/category-backgrounds/processed-packaged-snack.jpg');
+}
+
+
+.food-header.protein {
+    background-image:url('~@/assets/category-backgrounds/protein.jpg');
+}
+
+.food-header.beverage {
+    background-image:url('~@/assets/category-backgrounds/beverage.jpg');
+}
+
+.food-header.fruit-vegetable {
+    background-image:url('~@/assets/category-backgrounds/fruit-vegetable.jpg');
 }
 
 .food-header .v-card__title {

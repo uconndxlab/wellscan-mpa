@@ -118,7 +118,6 @@
   <v-card>
     <v-toolbar
       dark
-      color="secondary"
     >
       <v-btn
         icon

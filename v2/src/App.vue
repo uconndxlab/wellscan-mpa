@@ -232,7 +232,22 @@ export default {
 <style>
   /** Totally wasteful prefetching /shrug */
   html {
-    background-image:url('~@/assets/bg1.jpg');
+    background-image:url('~@/assets/bg1.jpg'), 
+      url('~@/assets/category-backgrounds/beverage.jpg'),
+      url('~@/assets/category-backgrounds/dairy.jpg'),
+      url('~@/assets/category-backgrounds/fruit-vegetable.jpg'),
+      url('~@/assets/category-backgrounds/mixed-dish.jpg'),
+      url('~@/assets/category-backgrounds/non-dairy-alternative.jpg'),
+      url('~@/assets/category-backgrounds/protein.jpg'),
+      url('~@/assets/category-backgrounds/baking-supplies-condiments.jpg'),
+      url('~@/assets/category-backgrounds/grain-whole.jpg'),
+      url('~@/assets/category-backgrounds/grain.jpg'),
+      url('~@/assets/category-backgrounds/processed-packaged-snack.jpg'),
+      url('~@/assets/category-backgrounds/snack-whole-grain.jpg'),
+
+      
+
+    ;
     background-size:0;
   }
   .v-application--wrap {
