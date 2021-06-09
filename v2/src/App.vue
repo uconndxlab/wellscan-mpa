@@ -246,8 +246,6 @@ export default {
       url('~@/assets/category-backgrounds/snack-whole-grain.jpg'),
       url('~@/assets/category-backgrounds/dessert.jpg'),
 
-      
-
     ;
     background-size:0;
   }
