@@ -348,6 +348,10 @@ export default {
                     if(typeof item.flagged == "undefined") {
                         item.flagged = false
                     }
+
+                    if(typeof item.flagText == "undefined") {
+                        item.flagText = ""
+                    }
                     
                     if(item.status == "active" && item.flagged == true)
                         that.items.push(item);
