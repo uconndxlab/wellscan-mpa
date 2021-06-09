@@ -332,7 +332,8 @@ export default {
             .doc(org)
             .collection("inventory")
             .orderBy("date_scanned", "desc");
-            
+           
+            that.headers.push({ text: 'Flag Text', value: 'flagText' },)
 
             listRef.onSnapshot(querySnapshot => {    
                 that.items = [];       
