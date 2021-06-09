@@ -178,14 +178,29 @@ export default {
                 var row = items[i];
                 if (!row.name)
                     row.name = " ";
-                exp.push ({
+
+                var obj = {
                     food:row.name.replace(/,/g, ''),
                     upc: row.upc,
                     rank:row.rank
-                });
+                }
+
+                var headers = ["Food Name", "UPC", "Rank"]
+
+                if(typeof that.snapshot.meta !== "undefined") {
+                  for(var u =0; u < that.snapshot.meta.length; u++) {
+                    var n = that.snapshot.meta[u].name;
+                    var v = that.snapshot.meta[u].value;
+                    headers.push(n)
+                    obj[n] = v;
+                  }
+                }
+                exp.push (obj);
             }
+
             
-            exp.unshift(["Food Name", "UPC", "Rank"]);
+            
+            exp.unshift(headers);
             
             let csvContent = "data:text/csv;charset=utf-8,"
             csvContent += this.ConvertToCSV(exp);

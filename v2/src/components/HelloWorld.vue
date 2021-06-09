@@ -257,7 +257,7 @@
                 </v-col>
                 </v-row>
                 <v-row v-if="activeFood.rank !== 'unranked'" :class="activeFood.rank">
-                  <v-col cols="6"></v-col>
+                  
                   <v-col cols="6" style="text-transform:capitalize"><h2>Choose {{activeFood.rank}}</h2></v-col>
                 </v-row>
               
