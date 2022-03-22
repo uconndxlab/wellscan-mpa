@@ -221,6 +221,11 @@ export default {
             sortable: false,
             value: 'name',
           },
+          {
+            text:"UPC",
+            value:"upc",
+            sortable:true
+          },
           { text: 'Rank', value: 'rank' },
           { text: 'Actions', value:'actions', sortable: false},
         ],

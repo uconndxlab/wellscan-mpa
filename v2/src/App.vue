@@ -37,7 +37,7 @@
       </v-list>
       
          <div v-if="user.loggedIn" class="pa-2">
-          <v-btn @click="signOut" block depressed tile color="accent">
+          <v-btn @click="signOut" block  tile color="accent">
             Log Out
           </v-btn>
         </div>
@@ -148,9 +148,7 @@ export default {
      drawer: null,
      items: [
           { title: "Scan", icon: 'mdi-barcode', to:"/", class:""},
-          { title: 'Inventory', icon: 'mdi-view-list', to:"/inventory", class:"d-none d-md-flex d-md-none" },
-          { title: 'Saved Snapshots', icon: 'mdi-view-dashboard', to:"/savedSnaps", class:"d-none d-md-flex d-md-none" },
-          { title: 'About WellSCAN', icon: 'mdi-information', to:"/about", class:"" },
+          { title: 'About WellSCAN', icon: 'mdi-information', to:"/about", class:"" }
         ],
   }),
 
@@ -167,7 +165,7 @@ export default {
       },
 
     loadFeedbackForm() {
-      console.log("wtf");
+
       this.openFeedback = !this.openFeedback;
     },
 
@@ -222,6 +220,11 @@ export default {
             loggedIn:true,
             usr_type:usr_type
           };
+
+          if(usr_type == "admin") {
+            that.items.push({ title: 'Inventory', icon: 'mdi-view-list', to:"/inventory", class:"d-none d-md-flex d-md-none" });
+            that.items.push({ title: 'Saved Snapshots', icon: 'mdi-view-dashboard', to:"/savedSnaps", class:"d-none d-md-flex d-md-none"});
+          }
         });
       }
     });
