@@ -228,6 +228,7 @@ export default {
 
           if(usr_type == "superadmin"){
             that.items.push({ title: 'Manage WellSCAN Foods', icon: 'mdi-view-dashboard', to:"/allFoods", class:"d-none d-md-flex d-md-none"});
+            that.items.push({ title: 'Manage Organizations', icon: 'mdi-view-dashboard', to:"/organizationDashboard", class:"d-none d-md-flex d-md-none"});
           }
         });
       }
