@@ -10,6 +10,8 @@ import SavedSnapshots from '../views/SavedSnapshots.vue'
 import SingleReport from '../views/SingleReport.vue'
 import SingleFood from '../views/SingleFood.vue'
 
+import AllFoods from '../views/AllFoods.vue'
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -34,6 +36,15 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: SavedSnapshots
+  },
+
+  {
+    path: '/allFoods',
+    name: 'All Foods',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: AllFoods
   },
 
   {

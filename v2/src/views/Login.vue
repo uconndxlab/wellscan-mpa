@@ -253,6 +253,7 @@ import firebase from "firebase";
         "Sheboygan County Food Bank",
         "South Michigan Food Bank",
         "Southeast Ohio Foodbank",
+        "St. Louis Area Foodbank",
         "Terre Haute Catholic Charities Foodbank",
         "Toledo Northwestern Ohio Food Bank"
         ],
