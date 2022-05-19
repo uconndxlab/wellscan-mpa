@@ -223,11 +223,11 @@ export default {
 
           if(usr_type == "admin" || usr_type == "superadmin") {
             that.items.push({ title: 'Inventory', icon: 'mdi-view-list', to:"/inventory", class:"d-none d-md-flex d-md-none" });
-            that.items.push({ title: 'Saved Snapshots', icon: 'mdi-view-dashboard', to:"/savedSnaps", class:"d-none d-md-flex d-md-none"});
+            that.items.push({ title: 'Saved Snapshots', icon: 'mdi-chart-box', to:"/savedSnaps", class:"d-none d-md-flex d-md-none"});
           }
 
           if(usr_type == "superadmin"){
-            that.items.push({ title: 'Manage WellSCAN Foods', icon: 'mdi-view-dashboard', to:"/allFoods", class:"d-none d-md-flex d-md-none"});
+            that.items.push({ title: 'Manage Foods', icon: 'mdi-food', to:"/allFoods", class:"d-none d-md-flex d-md-none"});
             that.items.push({ title: 'Manage Organizations', icon: 'mdi-view-dashboard', to:"/organizationDashboard", class:"d-none d-md-flex d-md-none"});
           }
         });

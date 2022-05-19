@@ -9,30 +9,55 @@
     >
     The Inventory feature works better on a large screen.   
     </v-alert>
+
+      <v-select
+          :items="swapcats"
+          placeholder="All Categories"
+          item-text="name"
+          item-value="abbr"
+          v-model="activeCat"
+          dense
+          solo
+          @change="getItems(activeCat)"
+      
+        ></v-select>
+   
+
     <v-toolbar
         flat
         dark
         color="primary"
     >
 
-        <v-toolbar-title tile>All Foods</v-toolbar-title>
+        <v-toolbar-title tile>All Foods 
+        <span v-if="activeCat != ''">
+            <v-chip
+              class="ma-2"
+             
+            >
+              {{activeCat}}
+            </v-chip>
+        </span> </v-toolbar-title>
         
         <v-spacer></v-spacer>
 
-   
+
 
 
 
     </v-toolbar>
- <v-data-table
-    :headers="headers"
-    :items="items"
-    :items-per-page="15"
-    flat
-    
-    class="elevation-1 rounded-0"
-  >
+  <v-data-table
+      :headers="headers"
+      :items="items"
+      :items-per-page="15"
+      flat
+      
+      class="elevation-1 rounded-0"
+    >
   
+      <template v-slot:[`item.upc`]="{ item }">
+        <a @click="setActiveItem(item)" href="#">{{item.upc}}</a>
+      </template>
 
     <template v-slot:[`item.rankings.tags`]="{ item }">
 
@@ -68,6 +93,7 @@
     <template v-slot:[`item.rankings.fano`]="{ item }">
       <v-select
           :items="swapcats[item.swapIndex].fano"
+          
           item-text="name"
           item-value="abbr"
           v-model="item.rankings.fano.category"
@@ -77,16 +103,14 @@
         ></v-select>
     </template>
 
-
-
-      <template v-slot:[`item.rankings.swap.category`]="{ item }">
+    <template v-slot:[`item.rankings.swap.category`]="{ item }">
       
       <v-select
           :items="swapcats"
           item-text="name"
           item-value="abbr"
           v-model="item.rankings.swap.category"
-          @change="setFanoCatsForHERCatAndApplyToItem(item)"
+  
           dense
       
         ></v-select>
@@ -94,19 +118,101 @@
     </template>
 
     <!-- <template v-slot:[`item.actions`]="{ item }">
-  
-
-
-    
-
     </template> -->
   </v-data-table>
 
+<v-dialog
+      v-model="showSingleFood"
+      max-width="600px"
+    >
+      <v-card v-if="showSingleFood">
+        <v-card-title>
+          <span class="text-h5">Edit Food</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col
+                cols="12"
+                
+              >
+                <v-text-field
+                  label="Name"
+                  v-model="activeItem.name"
+                  :placeholder="activeItem.name"
+                  required
+                ></v-text-field>
+              </v-col>
+              <v-col
+                cols="4"
+              >
+                <v-text-field
+                  label="Sodium"
+                  v-model="activeItem.nutrition.nf_sodium"
+                ></v-text-field>
+              </v-col>
+              <v-col
+                cols="4"
+              >
+                <v-text-field
+                  label="Sugars"
+                  v-model="activeItem.nutrition.nf_sugars"
+                ></v-text-field>
+              </v-col>
+
+              <v-col
+                cols="4"
+              >
+                <v-text-field
+                  label="Saturated Fat"
+                  v-model="activeItem.nutrition.nf_saturated_fat"
+                ></v-text-field>
+              </v-col>
+
+              <v-col
+                cols="12"
+              >
+                      <v-select
+          :items="swapcats"
+          placeholder="All Categories"
+          item-text="name"
+          item-value="abbr"
+          v-model="activeItem.rankings.swap.category"
+          dense
+          solo
+              
+        ></v-select>
+              </v-col>
+
+            </v-row>
+          </v-container>
+          <small>*indicates required field</small>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="blue darken-1"
+            text
+            @click="showSingleFood = false"
+          >
+            Close
+          </v-btn>
+          <v-btn
+            color="blue darken-1"
+            text
+            @click="showSingleFood = false"
+          >
+            Save
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
 
- 
 
 
+
+  
  </div>
 </template>
 
@@ -119,13 +225,17 @@ export default {
   data () {
       return {
 
+        activeCat:"",
+        activeItem:null,
+        showSingleFood:false,
+
         headers: [
 
          {
             text:"UPC",
             value:"upc",
             sortable:true,
-            width:'20%'
+            width:'10%'
           },
 
           {
@@ -164,135 +274,129 @@ export default {
           
         ],
 
-        swapcats: [
-          {name:'Fruit/Vegetable', abbr:"fruit-vegetable", fano:[] },
-          {name:'Protein', abbr:'protein', fano:[]},
-          {name:'Dairy', abbr:'dairy' , fano:[]},
-          {name:'Non-Dairy Alternative', abbr:'non-dairy-alternative' , fano:[]},
-          {name:'Beverage', abbr:'beverage' , fano:[]},
-          {name:'Mixed Dish', abbr:'mixed-dish', fano:[]},
-          {name:'Whole Grain Snack', abbr:'snack-whole-grain' , fano:[]},
-          {name:'Snack', abbr:'processed-packaged-snack' , fano:[]},
-          {name:'Whole Grain', abbr:'grain-whole' , fano:[]},
-          {name:'Non-whole Grain', abbr:'grain' , fano:[]},
-          {name:'Dessert', abbr:'dessert' , fano:[]},
-          {name:'Baking Supply/Condiment', abbr:'baking-supplies-condiments' , fano:[]}
-        ], 
-        swap_fano: {},
+        swapcats: [], 
+        
         items: [],
       }
     },
 
     methods: {
-       getFanoCatsFromFirestore() {
+        setActiveItem(item){
+          this.activeItem = item;
+          this.showSingleFood = true;
+          console.log(this.activeItem);
+
+        },
+       getHERCatsFromFirestore() {
           var db = firebase.firestore();
           var that = this;
-          var listRef = db.collection("fano-codes");
+          var listRef = db.collection("her-cats");
 
           
-
           listRef.onSnapshot(querySnapshot => {    
-            that.fanocats = [];       
+            this.swapcats = [];       
 
             querySnapshot.forEach(function(doc) {
-                 
-                
                 var cat = doc.data();
+                let fanoCodes = [];
 
-                let index = that.swapcats.findIndex(x => x.abbr ===cat.her_parent);
-                console.log(index);
-
-                that.swapcats[index]['fano'].push({
-                  name:doc.id,
-                  her_parent: cat.her_parent,
-                  tags: cat.tags
+                let fano = listRef.doc(doc.id).collection("fano-codes");
+                fano.onSnapshot(querySnapshot => {
+                  querySnapshot.forEach(function(unc) {
+                    fanoCodes.push({
+                      name: unc.data().name,
+                      id:unc.id
+                    });
+                  });
                 });
 
-              console.log(that.swapcats);
+                that.swapcats.push({
+                  abbr:doc.id,
+                  name: cat.name,
+                  fano: fanoCodes
+                });
 
+
+                
             });
-            console.log(that.swapcats);
-        })
+          })
         },
 
-        setFanoCatsForHERCatAndApplyToItem(item) {
-          // get fanocat for item.rankings.swap.category
-
-          let index = this.swapcats.findIndex(x => x.abbr === item.rankings.swap.category);
-
-          item.swapIndex = index;
-
-          // let her_cat = this.swapcats[index];
-
-          // console.log(her_cat);
-
-          // item.rankings.fano = her_cat.fano;
-          
-          // item.rankings.tags = her_cat.fano.tags;
-          // console.log(item.rankings.fano);
+        populateFANODropdown() {
 
         },
 
-        setTagsForFanoCatAndApplyToItem(){
+        getItems(swapcat = '') {
+          let that = this;
+          this.items = [];
+          let api_suffix = "";
+          var api_prefix = "https://v2.api.wellscan.io/api/";
+          if(swapcat !== '') {
+            api_suffix = "category/"+swapcat;
+          }
+          fetch(api_prefix + "foods/" + api_suffix)
+          .then(
+            function(response) {
 
-        
-          
+              
+
+              if (response.status !== 200) {
+                  console.log('Looks like there was a problem. Status Code: ' +
+                  response.status);
+                  return;
+              } 
+              
+              response.json().then(function(data) {
+                  
+                  //console.log(data);
+                  //that.items = data;
+
+                  data.forEach(function(item) {
+
+                    let swapIndex = typeof item.rankings.swap != 'undefined' ? that.swapcats.findIndex(x => x.abbr === item.rankings.swap.category) : 0;
+
+                    that.items.push({
+                      name:item.name,
+                      upc:item.upc,
+                      swapIndex:swapIndex,
+
+                      nutrition:item.nutrition,
+                      
+                      rankings: {
+                        swap: typeof item.rankings.swap != 'undefined' ? item.rankings.swap : {
+                          category:"Uncategorized",
+                          rank:"unranked"
+                        },
+                        fano: typeof item.rankings.fano != 'undefined' ? item.rankings.fano : [{
+                          name:"none",
+                          abbr:"none"
+                        }],
+                        tags: typeof item.rankings.tags != 'undefined' ? item.rankings.tags :[
+                          
+                        ]
+                      }
+                    })
+                  })
+                  console.log(that.items);
+                })
+              }
+          )
         }
     },
 
     mounted(){
-        this.getFanoCatsFromFirestore();
-        firebase.auth().onAuthStateChanged(user => {
+
+      // first, populate all the HER Cats
+      // then populate all the FANO codes for each HER Cat
+
+
+      this.getHERCatsFromFirestore();
+
+      firebase.auth().onAuthStateChanged(user => {
         if (!user) {
           this.$router.replace({name:"Login"});
         } else {
-
-          let that = this;
-          
-        var api_prefix = "https://v2.api.wellscan.io/api/";
-        fetch(api_prefix + "foods/")
-        .then(
-           function(response) {
-            if (response.status !== 200) {
-                console.log('Looks like there was a problem. Status Code: ' +
-                response.status);
-                return;
-            } 
-            
-            response.json().then(function(data) {
-                
-                console.log(data);
-                //that.items = data;
-
-                data.forEach(function(item) {
-
-                let swapIndex = typeof item.rankings.swap != 'undefined' ? that.swapcats.findIndex(x => x.abbr === item.rankings.swap.category) : 0;
-
-                  that.items.push({
-                    name:item.name,
-                    upc:item.upc,
-                    swapIndex:swapIndex,
-                    
-                    rankings: {
-                      swap: typeof item.rankings.swap != 'undefined' ? item.rankings.swap : {
-                        category:"Uncategorized",
-                        rank:"unranked"
-                      },
-                      fano: typeof item.rankings.fano != 'undefined' ? item.rankings.fano : [{
-                        name:"none",
-                        abbr:"none"
-                      }],
-                      tags: typeof item.rankings.tags != 'undefined' ? item.rankings.tags :[
-                        
-                      ]
-                    }
-                  })
-                })
-
-              })
-            }
-        )
-          
+          //this.getItems();
         }
       });
     }
