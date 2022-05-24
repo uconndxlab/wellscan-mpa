@@ -58,7 +58,7 @@
                     :key="i">
 
                     <v-list-item-content style="border-bottom:1px solid #c3c3c3;">
-                      <v-list-item-title>{{user.name}} {{user.id}}</v-list-item-title>
+                      <v-list-item-title>{{user.name}}</v-list-item-title>
                       <v-radio-group v-model="user.type" row>
                           <v-radio
                               label="User"
@@ -76,7 +76,7 @@
                     </v-list-item-content>
 
                     <v-list-item-action>
-                      <v-btn @click="resetPassword(user.email)">
+                      <v-btn title="Send Password Reset Email" @click="resetPassword(user.email)">
                         <v-icon color="grey lighten-1">mdi-lock-reset</v-icon>
                       </v-btn>
                     </v-list-item-action>

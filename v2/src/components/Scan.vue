@@ -15,7 +15,7 @@
       </v-alert>
     </v-card>
     </div>
-    <v-list three-line>
+    <v-list three-line v-if="items.length !== 0">
       <template v-for="(item, index) in items">
         <v-list-item
           ripple
@@ -445,7 +445,7 @@
   </v-card>
 </v-dialog>
 
-<v-dialog v-model="showDeletePrompt">
+<v-dialog v-model="showDeletePrompt" v-if="items.length !== 0">
 <v-card>
         <v-card-title class="text-h5">
           Delete Food?
