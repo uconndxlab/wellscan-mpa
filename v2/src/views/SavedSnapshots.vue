@@ -11,7 +11,7 @@
                 <v-list-item-subtitle v-html="item.DateSaved"></v-list-item-subtitle>
             </v-list-item-content>
           <v-list-item-action>
-            <v-btn icon @click="removeItem(index)">
+            <v-btn icon @click="removeItem(item.id)">
                 <v-icon>                        
                   mdi-delete-outline
                 </v-icon>
@@ -43,36 +43,49 @@ export default {
     },
 
     methods: {
-    getItems() {
-    
-        var that = this;
+      getItems() {
       
-        var org = this.user.organization;
-        var db = firebase.firestore();
-        var ret = [];
-        var listRef = db.collection("organizations")
-        .doc(org)
-        .collection("reports")
-        .orderBy("DateSaved");
+          var that = this;
+        
+          var org = this.user.organization;
+          var db = firebase.firestore();
+          var ret = [];
+          var listRef = db.collection("organizations")
+          .doc(org)
+          .collection("reports")
+          .orderBy("DateSaved");
 
-        listRef.onSnapshot(querySnapshot => {
+          listRef.onSnapshot(querySnapshot => {
 
-            //doc.data() is never undefined for query doc snapshots
-            ret = [];
-            querySnapshot.forEach(function(doc) {
-                var item = doc.data();
-                item.DateSaved = item.DateSaved.toDate();
-                item.id = doc.id;
-                ret.push(item);
-            });
-            that.items = ret;
+              //doc.data() is never undefined for query doc snapshots
+              ret = [];
+              querySnapshot.forEach(function(doc) {
+                  var item = doc.data();
+                  item.DateSaved = item.DateSaved.toDate();
+                  item.id = doc.id;
+                  ret.push(item);
+              });
+              that.items = ret;
 
-            
-            
- 
-        })
-    
-    }
+              
+              
+  
+          })
+      
+      },
+
+      removeItem(id) {
+            let that = this;
+
+            var db = firebase.firestore();
+
+            db.collection("organizations")
+            .doc(that.user.organization)
+            .collection("reports")
+            .doc(id)
+            .delete()
+      }
+
 
 
 

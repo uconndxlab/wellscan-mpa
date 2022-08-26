@@ -288,10 +288,24 @@ import firebase from "firebase";
     props:['tab'],
 
     mounted() {
-      this.orgs.sort();
+      this.getOrgs();
     },
 
     methods: {
+      getOrgs() {
+        let self = this;
+        self.orgs = [];
+        /** get organizations from firestore collection */
+        let db = firebase.firestore();
+        db.collection("organizations").get().then(function(querySnapshot) {
+          querySnapshot.forEach(function(doc) {
+            let name = doc.id;
+            self.orgs.push(name);
+          });
+        });
+        self.orgs.sort();
+      },
+
       register() {
         var that = this;
         firebase

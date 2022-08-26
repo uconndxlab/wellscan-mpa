@@ -10,7 +10,7 @@
     The Dashboard feature works better on a large screen.   
     </v-alert>
 
-<v-btn color="primary">Add Organization</v-btn>
+<v-btn color="primary" @click="showAddOrg = true">Add Organization</v-btn>
 
  <v-list two-line>
       
@@ -103,6 +103,48 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+<v-dialog
+      v-model="showAddOrg"
+      width="500"
+    >
+
+
+      <v-card>
+        <v-card-title class="text-h5 grey lighten-2">
+          Add Organization
+        </v-card-title>
+
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="newOrgName"
+                  label="Organization Name"
+                  required
+                ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+
+        <v-divider></v-divider>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="primary"
+            text
+            @click="showAddOrg = false; addOrg()"
+          >
+            Save
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+
 
 
 <!-- <v-expansion-panels>
@@ -200,7 +242,9 @@ export default {
       return {
           orgs:[],
           activeOrg:{},
-          showSingleOrg:false
+          showSingleOrg:false,
+          showAddOrg:false,
+          newOrgName:'',
           
       }
     },
@@ -240,7 +284,7 @@ export default {
 
 
                 });
-                
+                this.orgs.sort();
             })
         },
 
@@ -276,6 +320,20 @@ export default {
         loadOrgInfo(org){
             this.showSingleOrg = true;
             this.activeOrg = org;
+        },
+
+        addOrg(){
+            var db = firebase.firestore();
+            var orgRef = db.collection("organizations").doc(this.newOrgName);
+            orgRef.set({
+                name:this.newOrgName
+            })
+            .then(function() {
+                console.log("Document successfully written!");
+            })
+            .catch(function(error) {
+                console.error("Error writing document: ", error);
+            });
         }
 
 
