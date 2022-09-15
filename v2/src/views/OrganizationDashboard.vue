@@ -76,7 +76,7 @@
                     </v-list-item-content>
 
                     <v-list-item-action>
-                      <v-btn title="Send Password Reset Email" @click="resetPassword(user.email)">
+                      <v-btn title="Send Password Reset Email" @click="resetPassword(user.name)">
                         <v-icon color="grey lighten-1">mdi-lock-reset</v-icon>
                       </v-btn>
                     </v-list-item-action>
