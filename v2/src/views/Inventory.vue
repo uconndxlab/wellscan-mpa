@@ -50,7 +50,18 @@
         <v-toolbar-title tile>{{folder}} <small>{{user.organization}}</small></v-toolbar-title>
         
         <v-spacer></v-spacer>
-
+        <v-select
+          :items="tags"
+          
+          item-text="name"
+          item-value="abbr"
+          v-model="activeTag"
+          placeholder="All Categories"
+          @change="getInventoryForOrg(activeTag)"
+          dense
+      
+        ></v-select>
+        <v-spacer></v-spacer>
         <v-btn
             v-if="this.folder == 'Active Foods'"
             dark
@@ -62,8 +73,10 @@
 
 
 
+
+
     </v-toolbar>
- <v-data-table
+  <v-data-table
     :headers="headers"
     :items="items"
     :items-per-page="15"
@@ -71,6 +84,12 @@
     
     class="elevation-1 rounded-0"
   >
+
+  <!-- Template slot for date_scanned -->
+  <template v-slot:[`item.date_scanned`]="{ item }">
+    <span>{{ item.date_scanned | moment('lll') }}</span>
+  </template>
+
     
     <template v-slot:[`item.rank`]="{ item }">
       <v-chip
@@ -212,15 +231,45 @@ export default {
             loggedIn:false,
             usr_type:"",
         },
+        activeTag:"All",
         showExport: false,
         folder:"Active Foods",
+        tags: [
+          {name:"All", abbr:""},
+          {name:'Fruit/Vegetable', abbr:"fruit-vegetable" },
+          {name:'Protein', abbr:'protein'},
+          {name:'Dairy', abbr:'dairy'},
+          {name:'Non-Dairy Alternative', abbr:'non-dairy-alternative'},
+          {name:'Beverage', abbr:'beverage'},
+          {name:'Mixed Dish', abbr:'mixed-dish'},
+          {name:'Whole Grain Snack', abbr:'snack-whole-grain'},
+          {name:'Snack', abbr:'processed-packaged-snack'},
+          {name:'Whole Grain', abbr:'grain-whole'},
+          {name:'Non-whole Grain', abbr:'grain'},
+          {name:'Dessert', abbr:'dessert'},
+          {name:'Baking Supply/Condiment', abbr:'baking-supplies-condiments'}
+        ],
         headers: [
+          {
+            text: 'Date Scanned',
+            align: 'start',
+            sortable: false,
+            value: 'date_scanned',
+          },
           {
             text: 'Name',
             align: 'start',
             sortable: false,
             value: 'name',
           },
+
+          {
+            text: 'Category',
+            align: 'start',
+            sortable: false,
+            value: 'category',
+          },
+
           {
             text:"UPC",
             value:"upc",
@@ -250,7 +299,7 @@ export default {
         deleteSnapshotField(index) {
           this.snapshot.meta.splice(index, 1);
         },
-        getInventoryForOrg() {
+        getInventoryForOrg(cat = "") {
             this.folder="Active Foods";
             let org = this.user.organization;
             
@@ -262,6 +311,10 @@ export default {
             .doc(org)
             .collection("inventory")
             .orderBy("date_scanned", "desc");
+
+            if (cat !== "") {
+              listRef = listRef.where("category", "==", cat);
+            }
             
 
             listRef.onSnapshot(querySnapshot => {    
