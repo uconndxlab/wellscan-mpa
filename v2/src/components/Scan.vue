@@ -119,7 +119,7 @@
                 <v-btn
                   color="primary"
                   text
-                  @click="foodClicked = !foodClicked; $router.back();onFoodUpdated();"
+                  @click="foodClicked = !foodClicked; $router.back();saveFood();onFoodUpdated();"
                 >
                   <v-icon>mdi-close</v-icon>
                 </v-btn>
@@ -656,8 +656,8 @@ import 'firebase/firestore';
 
       saveFood() {
         console.log("saveFood()...");
-        //var api_prefix = "https://v2.api.wellscan.io/api/";
-         var api_prefix = "http://localhost:8000/api/"
+        var api_prefix = "https://v2.api.wellscan.io/api/";
+        //var api_prefix = "http://localhost:8000/api/"
         
         // data to be sent to the POST request
         let _data = {
