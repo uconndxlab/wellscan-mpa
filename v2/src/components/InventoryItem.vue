@@ -84,19 +84,41 @@
                   ></v-text-field>
                 </v-col>
 
-                <v-col
-                  cols="4">   
-                <v-text-field
-                  type="number"
-                  v-model="activeFood.nutrition.nf_sugars"
-                  :error = "hasNutrientError('nf_sugars')"
-                  
-                  dense
-                  label="Sugars*"
-                  outlined
-                  @change="calculateRankOfActiveFood"
-                ></v-text-field>
-                </v-col>
+                <v-row style="margin-top:0px!important;">
+
+<v-col
+  cols="6">
+
+  <v-text-field
+    type="number"
+    v-model="activeFood.nutrition.nf_added_sugars"
+    :error = "hasNutrientError('nf_added_sugars')"
+    @change="activeFood.rank = 'unranked'; activeFood.flagged = true;"
+    dense
+    label="Added Sugars"
+    outlined
+    
+  ></v-text-field>
+ 
+</v-col> 
+
+<v-col
+  cols="6">
+
+  <v-text-field
+    type="number"
+    :error = "hasNutrientError('nf_sugars')"
+    @change="activeFood.rank = 'unranked'; activeFood.flagged = true;"
+    dense
+    label="Total Sugars"
+    v-model="activeFood.nutrition.nf_sugars"
+    outlined
+    
+  ></v-text-field>
+ 
+</v-col>                    
+
+</v-row>
 
                 <v-col
                   cols="4">   
@@ -240,6 +262,7 @@ import 'firebase/firestore';
       foodClicked:false,
       upcToSearch:"",
       showCategoryInfo: false,
+      sugarTypes:['Total Sugars', 'Added Sugars'],
       activeFood: {          
           name: 'Not Found',
           upc: "",
@@ -249,7 +272,8 @@ import 'firebase/firestore';
           nutrition: {
             nf_sodium:"",
             nf_saturated_fat:"",
-            nf_sugars:""
+            nf_sugars:"",
+            nf_added_sugars:""
           }},
      tags: [
         {name:'Fruit/Vegetable', abbr:"fruit-vegetable" },
@@ -390,6 +414,7 @@ import 'firebase/firestore';
           name: this.activeFood.name,
           nf_saturated_fat:this.activeFood.nutrition.nf_saturated_fat,
           sugars:this.activeFood.nutrition.nf_sugars,
+          added_sugars:this.activeFood.nutrition.nf_added_sugars,
           sodium:this.activeFood.nutrition.nf_sodium,
           category:this.activeFood.category,
           rank:this.activeFood.rank,
@@ -417,7 +442,7 @@ import 'firebase/firestore';
             console.log("CalculateRankOfActiveFood(): Ready to calculate rank..."); 
             console.log(`Ranking for ${this.activeFood.category}`);
             console.log(api_prefix+"foods/rankFromNuts/" + this.activeFood.category + "/" + this.activeFood.nutrition.nf_saturated_fat + "/" + this.activeFood.nutrition.nf_sodium + "/" + 0 + "/" + this.activeFood.nutrition.nf_sugars)
-            fetch(api_prefix+"foods/rankFromNuts/" + this.activeFood.category + "/" + this.activeFood.nutrition.nf_saturated_fat + "/" + this.activeFood.nutrition.nf_sodium + "/" + 0 + "/" + this.activeFood.nutrition.nf_sugars)
+            fetch(api_prefix+"foods/rankFromNuts/" + this.activeFood.category + "/" + this.activeFood.nutrition.nf_saturated_fat + "/" + this.activeFood.nutrition.nf_sodium + "/" + this.activeFood.nutrition.nf_added_sugars + "/" + this.activeFood.nutrition.nf_sugars)
             .then(
               function(response) {
                 if (response.status !== 200) {
